@@ -11,6 +11,8 @@
 }
 
 .title {
+  position: fixed;
+  z-index: 4;
   line-height: 1.15;
   font-size: 4rem;
 }

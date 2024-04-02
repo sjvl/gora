@@ -60,6 +60,10 @@ function Character() {
         <div >
             <img
                 style={{
+                    zIndex: '2',
+                    position: 'absolute',
+                    top: 'calc(50vh - 22px)',
+                    left: 'calc(50vw - 16px)',
                     width:'32px',
                     height:'45px',
                     objectFit: 'none',
