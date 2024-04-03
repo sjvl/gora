@@ -5,55 +5,64 @@ function Sam(props) {
     const [xCoords, setXCoords] = useState(props.xCoords)
     const [yCoords, setYCoords] = useState(props.yCoords)
 
-    const [xSteps, setXSteps] = useState(0)
+    const [frames, setFrames] = useState(0)
     const [walking, setWalking] = useState(0)
 
     useEffect(() => {
-        console.log('from Sam', xCoords, yCoords)
+        // console.log('from Sam', xCoords, yCoords)
     }, [xCoords, yCoords])
 
     useEffect(() => {
         function animate(pos) {
             if(walking === 0){
                 setWalking(1);
-                
+
                 setTimeout(() => {
-                    setXSteps(pos + 32)
+                    setFrames(pos + 32)
                 }, 40);
                 setTimeout(() => {
-                    setXSteps(pos)
+                    setFrames(pos)
                 }, 80);
                 setTimeout(() => {
-                    setXSteps(pos + 64)
+                    setFrames(pos + 64)
                 }, 120);
                 setTimeout(() => {
-                    setXSteps(pos)
+                    setFrames(pos)
                     setWalking(0);
                 }, 160);
+                
             }
             
         }
         function handleKeyDown(e) {
             if(walking === 0){
                 if(e.key === 'ArrowDown') {
-                        setXSteps(0);
-                        animate(0);
-                        setYCoords(yCoords + 1);
+                        setFrames(0);
+                        if (e.repeat) {
+                            animate(0);
+                            setYCoords(yCoords + 1);
+                        }
                 }
                 if(e.key === 'ArrowUp') {
-                        setXSteps(192);
-                        animate(192);
-                        setYCoords(yCoords - 1);
+                        setFrames(192);
+                        if (e.repeat) {
+                            animate(192);
+                            setYCoords(yCoords - 1);
+                        }
                 }
                 if(e.key === 'ArrowLeft') {
-                        setXSteps(96);
-                        animate(96);
-                        setXCoords(xCoords - 1);
+                        setFrames(96);
+                        if (e.repeat) {
+                            animate(96);
+                            setXCoords(xCoords - 1);
+                        }
                 }
                 if(e.key === 'ArrowRight') {
-                        setXSteps(288);
-                        animate(288);
-                        setXCoords(xCoords + 1);
+                        setFrames(288);
+                        if (e.repeat) {
+                            animate(288);
+                            setXCoords(xCoords + 1);
+                        }
                 }
             }
 
@@ -65,7 +74,7 @@ function Sam(props) {
         return function cleanup() {
           document.removeEventListener('keydown', handleKeyDown);
         }
-      }, [xSteps]);
+      }, [frames]);
 
     return (
         <div >
@@ -80,7 +89,7 @@ function Sam(props) {
                     width:'32px',
                     height:'64px',
                     objectFit: 'none',
-                    objectPosition: `-${xSteps}px`,
+                    objectPosition: `-${frames}px`,
                 }}
                 src='/sam.png'
             />
