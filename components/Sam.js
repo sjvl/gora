@@ -1,61 +1,62 @@
 import { useEffect, useState } from 'react';
 
 function Sam(props) {
+    
+    const [xCoords, setXCoords] = useState(props.xCoords)
+    const [yCoords, setYCoords] = useState(props.yCoords)
 
     const [xSteps, setXSteps] = useState(0)
     const [walking, setWalking] = useState(0)
-    const [coords, setCoords] = useState({x: 10, y: 10})
 
     useEffect(() => {
-        // find coords from map
-        console.log((props.x)*-1 /32 + coords.x, (props.y)*-1 /32 + coords.y)
-    }, [walking])
+        console.log('from Sam', xCoords, yCoords)
+    }, [xCoords, yCoords])
 
     useEffect(() => {
         function animate(pos) {
             if(walking === 0){
                 setWalking(1);
-                setXSteps(pos + 32)
-
+                
+                setTimeout(() => {
+                    setXSteps(pos + 32)
+                }, 40);
                 setTimeout(() => {
                     setXSteps(pos)
-                }, 100);
+                }, 80);
                 setTimeout(() => {
                     setXSteps(pos + 64)
-                }, 200);
+                }, 120);
                 setTimeout(() => {
                     setXSteps(pos)
                     setWalking(0);
-                }, 300);
+                }, 160);
             }
             
         }
         function handleKeyDown(e) {
-            if(e.key === 'ArrowDown') {
-                if(walking === 0){
-                    setXSteps(0)
-                    animate(0)
-                    setCoords()
+            if(walking === 0){
+                if(e.key === 'ArrowDown') {
+                        setXSteps(0);
+                        animate(0);
+                        setYCoords(yCoords + 1);
+                }
+                if(e.key === 'ArrowUp') {
+                        setXSteps(192);
+                        animate(192);
+                        setYCoords(yCoords - 1);
+                }
+                if(e.key === 'ArrowLeft') {
+                        setXSteps(96);
+                        animate(96);
+                        setXCoords(xCoords - 1);
+                }
+                if(e.key === 'ArrowRight') {
+                        setXSteps(288);
+                        animate(288);
+                        setXCoords(xCoords + 1);
                 }
             }
-            if(e.key === 'ArrowUp') {
-                if(walking === 0){
-                    setXSteps(192)
-                    animate(192)
-                }
-            }
-            if(e.key === 'ArrowLeft') {
-                if(walking === 0){
-                    setXSteps(96)
-                    animate(96)
-                }
-            }
-            if(e.key === 'ArrowRight') {
-                if(walking === 0){
-                    setXSteps(288)
-                    animate(288)
-                }
-            }
+
         }
         
         document.addEventListener('keydown', handleKeyDown);
@@ -70,21 +71,18 @@ function Sam(props) {
         <div >
             <img
                 style={{
-                    zIndex: '2',
+                    zIndex: '1',
                     position: 'absolute',
 
-                    // top: 'calc(50vh - 16px)',
-                    // left: 'calc(50vw - 16px)',
-
-                    top: `${props.y + (props.y * -1) -16 + (coords.y * 32)}px`,
-                    left: `${props.x + (props.x * -1) -2 + (coords.x * 32)}px`,
+                    top: '50vh',
+                    left: '50vw',
 
                     width:'32px',
                     height:'64px',
                     objectFit: 'none',
                     objectPosition: `-${xSteps}px`,
                 }}
-                src='/sam.png' 
+                src='/sam.png'
             />
         </div>
     );
