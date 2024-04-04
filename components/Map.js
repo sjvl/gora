@@ -5,14 +5,15 @@ import Sam from './Sam';
 function Map() {
 
     //starting coords for player
-    const [xCoords, setXCoords] = useState(18)
-    const [yCoords, setYCoords] = useState(18)
+    const [xCoords, setXCoords] = useState(16)
+    const [yCoords, setYCoords] = useState(16)
 
     const [xSteps, setXSteps] = useState(xCoords * -32)
     const [ySteps, setYSteps] = useState(yCoords * -32)
     const [mapMooving, setMapMooving] = useState(0)
 
     const [walls, setWalls] = useState(undefined)
+    const [moovable, setMoovable] = useState(false)
 
     const [windowDimensions, setWindowDimensions] = useState({
         width: undefined,
@@ -35,9 +36,9 @@ function Map() {
         getData();
     }, [])
 
-    // useEffect(() => {
-    //     console.log(walls)
-    // }, [walls])
+    useEffect(() => {
+        console.log(walls)
+    }, [walls])
 
     useEffect(() => {
         const handleResize = () => {
@@ -68,6 +69,7 @@ function Map() {
                 let futureX = xCoords - dir;
                 let go = false;
                 if(mooveX[futureX] === 0) go = true;
+                setMoovable(go);
 
                 if((go)){
                     if( !mapMooving ){
@@ -107,6 +109,8 @@ function Map() {
                 let futureY = yCoords - dir;
                 let go = false;
                 if(mooveY[futureY] === 0) go = true;
+                console.log(go)
+                setMoovable(go);
     
                 if((go)){
                     if( !mapMooving ){
@@ -176,7 +180,7 @@ function Map() {
                 src='/floor.png' 
             />
             {/* <Character /> */}
-            <Sam xCoords={xCoords} yCoords={yCoords}/>
+            <Sam xCoords={xCoords} yCoords={yCoords} moovable={moovable} />
             <img
                 style={{
                     position: 'fixed',

@@ -18,18 +18,29 @@ function Sam(props) {
                 setWalking(1);
 
                 setTimeout(() => {
-                    setFrames(pos + 32)
-                }, 40);
-                setTimeout(() => {
-                    setFrames(pos)
-                }, 80);
-                setTimeout(() => {
                     setFrames(pos + 64)
-                }, 120);
+                }, 53);
+                setTimeout(() => {
+                    setFrames(pos + 32)
+                }, 106);
                 setTimeout(() => {
                     setFrames(pos)
                     setWalking(0);
                 }, 160);
+
+                // setTimeout(() => {
+                //     setFrames(pos + 32)
+                // }, 40);
+                // setTimeout(() => {
+                //     setFrames(pos)
+                // }, 80);
+                // setTimeout(() => {
+                //     setFrames(pos + 64)
+                // }, 120);
+                // setTimeout(() => {
+                //     setFrames(pos)
+                //     setWalking(0);
+                // }, 160);
                 
             }
             
@@ -37,32 +48,32 @@ function Sam(props) {
         function handleKeyDown(e) {
             if(walking === 0){
                 if(e.key === 'ArrowDown') {
-                        setFrames(0);
-                        if (e.repeat) {
-                            animate(0);
-                            setYCoords(yCoords + 1);
-                        }
+                    setFrames(0);
+                    if (e.repeat) {
+                        animate(0);
+                        setYCoords(yCoords + 1);
+                    }
                 }
                 if(e.key === 'ArrowUp') {
-                        setFrames(192);
-                        if (e.repeat) {
-                            animate(192);
-                            setYCoords(yCoords - 1);
-                        }
+                    setFrames(192);
+                    if (e.repeat) {
+                        animate(192);
+                        setYCoords(yCoords - 1);
+                    }
                 }
                 if(e.key === 'ArrowLeft') {
-                        setFrames(96);
-                        if (e.repeat) {
-                            animate(96);
-                            setXCoords(xCoords - 1);
-                        }
+                    setFrames(96);
+                    if (e.repeat) {
+                        animate(96);
+                        setXCoords(xCoords - 1);
+                    }
                 }
                 if(e.key === 'ArrowRight') {
-                        setFrames(288);
-                        if (e.repeat) {
-                            animate(288);
-                            setXCoords(xCoords + 1);
-                        }
+                    setFrames(288);
+                    if (e.repeat) {
+                        animate(288);
+                        setXCoords(xCoords + 1);
+                    }
                 }
             }
 
@@ -74,10 +85,10 @@ function Sam(props) {
         return function cleanup() {
           document.removeEventListener('keydown', handleKeyDown);
         }
-      }, [frames]);
+      }, [frames, props]);
 
     return (
-        <div >
+        <div>
             <img
                 style={{
                     zIndex: '1',
