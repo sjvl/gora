@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState } from "react"; 
 
 function Tile(props) {
-    const [isclicked, setIsClicked] = useState(false)
 
     let color = 'transparent';
-    if(isclicked) color = 'purple'
+    if(props.isClicked === 1) color = 'purple'
 
     const handleClick = (id) => {
         props.selectWalls(id);
@@ -13,8 +12,8 @@ function Tile(props) {
     return (
         <div
             onClick={(e) => {
-                setIsClicked(!isclicked);
                 handleClick(e.target.id);
+                // console.log(e.target.id);
             }}
             id={`${props.x};${props.y}`}
             style={{
@@ -23,6 +22,7 @@ function Tile(props) {
                 position: 'absolute',
                 top: props.y * 32,
                 left: props.x * 32,
+                zIndex: 3,
                 border: '1px solid gray',
                 boxSizing: 'border-box',
                 opacity: '.5',

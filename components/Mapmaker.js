@@ -3,22 +3,25 @@ import Tuile from './Tuile'
 
 function Mapmaker() {
     const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
-    const [gridSize, setGridSize] = useState(32); // Taille d'une cellule de la grille
-    const [jsonImport, setJsonImport] = useState(null);
+    const gridSize = 32;
+    const [walls, setWalls] = useState([]);
+    
     const fileInputRef = useRef(null);
 
 
     const selectWalls = (id) => {
-        let coords = id.split(';'); // Divise la chaîne en fonction du point-virgule
-        let x = parseInt(coords[0]); // Convertit la première partie en nombre
-        let y = parseInt(coords[1]); // Convertit la deuxième partie en nombre
-        if(data[y][x] === 0) {data[y][x] = 1} else {data[y][x] = 0} 
+        let coords = id.split(';');
+        let x = parseInt(coords[0]);
+        let y = parseInt(coords[1]);
+        let tmp = [...walls];
+        if(tmp[y][x] === 0) {tmp[y][x] = 1} else {tmp[y][x] = 0};
+        setWalls([...tmp]);
     };
 
     const exportJson = () => {
         //renverser data et structurer le futur json
-        const flipped = data[0].map((col, index) => data.map(lin => lin[index]));
-        const jsonData = { lin: flipped, col: data };
+        const flipped = walls[0].map((col, index) => walls.map(lin => lin[index]));
+        const jsonData = { lin: flipped, col: walls };
 
         // Convertir le tableau en JSON
         const json = JSON.stringify(jsonData);
@@ -43,32 +46,36 @@ function Mapmaker() {
         fileInputRef.current.click();
     }
 
-    const handleFileChange = async (event) => {
+    const handleFileChange = (event) => {
         const file = event.target.files[0];
         const reader = new FileReader();
-        reader.onload = async (event) => {
+        reader.onload = (event) => {
             const text = event.target.result;
-            try {
-                const parsedJson = JSON.parse(text);
-                setJsonImport(parsedJson);
-            } catch (error) {
-                console.error('Erreur lors de l\'analyse JSON :', error);
-            }
+            const parsedJson = JSON.parse(text);
+            if(parsedJson.col){
+                if(parsedJson.col.length === imageSize.height/gridSize){
+                    setWalls(parsedJson.col);
+                }else {alert("Oups.. This JSON doesn't match this map!");}
+            }else {alert("Oups.. This JSON doesn't match this map!");}
         };
-        reader.readAsText(file);
+        if(file)reader.readAsText(file);
     };
-
-    useEffect(()=>{
-        console.log(jsonImport)
-    },[jsonImport])
   
     useEffect(() => {
         const loadImage = () => {
             const img = new Image();
             img.onload = () => {
-            setImageSize({ width: img.width, height: img.height });
+                setImageSize({ width: img.width, height: img.height });
+
+                let rows = img.height/gridSize;
+                let cols = img.width/gridSize
+                let array = new Array(rows).fill(0).map(function() {
+                    return new Array(cols).fill(0);
+                });
+                setWalls(array);
+
             };
-            img.src = "floor.png";
+            img.src = "floor.png"; 
         };
     
         loadImage();
@@ -77,23 +84,15 @@ function Mapmaker() {
             // Clean up
         };
     }, []);
-  
-    const data = []
-    const gridSquares = [];
-    for (let y = 0; y < imageSize.height / gridSize; y++) {
-        data.push([])
-        for (let x = 0; x < imageSize.width / gridSize; x++) {
-            data[y].push(0)
-            gridSquares.push(<Tuile selectWalls={selectWalls} key={`tile_${x}_${y}`} x={x} y={y} />);
-        }
-    };
-  
+    
+    const gridSquares = walls.map((row,y) => row.map((col,x) => <Tuile selectWalls={selectWalls} key={`tile_${x}_${y}`} x={x} y={y} isClicked={col}/>))
+    
     return (
         <div>
-            <div style={{position: 'fixed', zIndex: 2, backgroundColor: 'white', width: '100%', height: '64px', display: 'flex', padding: '12px', alignItems: 'center', justifyContent: 'space-around'}}>
+            <div style={{position: 'fixed', zIndex: 10, backgroundColor: 'white', width: '100%', height: '64px', display: 'flex', padding: '12px', alignItems: 'center', justifyContent: 'space-around'}}>
                 <h2>map maker</h2>
                 <div>
-                    <button>Import image</button>
+                    {/* <button>Import image</button> */}
                     <button onClick={importJson}>Import walls</button>
                     <input type="file" accept="application/json" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange}/>
                     <button onClick={() => exportJson()} >Export walls</button>
@@ -102,7 +101,7 @@ function Mapmaker() {
 
             <div style={{position: 'absolute', top: '64px', width: `${imageSize.width}`, height: `${imageSize.height}`}}>
                 <img src="floor.png" />
-                {/* <img src="front.png" /> */}
+                <img src="front.png" style={{position: 'absolute', top: '0px', zIndex: 2, opacity: '.4', filter: 'invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%)'}}/>
                 {gridSquares}
             </div>
         </div>
