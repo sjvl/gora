@@ -1,0 +1,18 @@
+.button {
+    margin-right: 10px;
+    background-color:mediumpurple;
+    border-radius: 5px;
+    border: solid 1px blanchedalmond;
+    padding: 5px 10px;
+    color: blanchedalmond;
+    cursor: pointer;
+}
+
+.button:hover {
+    margin-right: 10px;
+    background-color: blueviolet;
+    border-radius: 5px;
+    border: solid 1px blanchedalmond;
+    padding: 5px 10px;
+    color: blanchedalmond;
+}

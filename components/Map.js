@@ -68,7 +68,7 @@ function Map() {
                 let mooveX = walls.col[yCoords];
                 let futureX = xCoords - dir;
                 let go = false;
-                if(mooveX[futureX] === 0) go = true;
+                if(mooveX[futureX] !== 1) go = true;
                 setMoovable(go);
 
                 if((go)){
@@ -108,7 +108,7 @@ function Map() {
                 let mooveY = walls.lin[xCoords];
                 let futureY = yCoords - dir;
                 let go = false;
-                if(mooveY[futureY] === 0) go = true;
+                if(mooveY[futureY] !== 1) go = true;
                 console.log(go)
                 setMoovable(go);
     
@@ -146,7 +146,7 @@ function Map() {
             }
     
             function handleKeyDown(e) {
-                if (mapMooving === 0){
+                if (!mapMooving){
                     if (e.repeat) {
                         if(e.key === 'ArrowDown') moveY(-1)
                         if(e.key === 'ArrowUp') moveY(+1)
@@ -190,7 +190,7 @@ function Map() {
                     objectFit: 'none',
                     objectPosition: `${windowDimensions.width /2 + xSteps}px ${windowDimensions.height / 2 +32 + ySteps}px`,
                 }}
-                src='/front.png' 
+                src='/foreground.png' 
             />
             
         </div>

@@ -7,6 +7,10 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+.bodyModified {
+  overflow: hidden;
+}
+
 * {
   box-sizing: border-box;
 }

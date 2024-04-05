@@ -1,12 +1,12 @@
-import { useState } from "react"; 
-
 function Tile(props) {
 
     let color = 'transparent';
     if(props.isClicked === 1) color = 'purple'
+    if(props.isClicked === 'S') color = 'green'
+    if(props.isClicked === 'A') color = 'orange'
 
     const handleClick = (id) => {
-        props.selectWalls(id);
+        props.selectTile(id);
     };
 
     return (

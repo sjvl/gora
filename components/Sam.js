@@ -49,28 +49,28 @@ function Sam(props) {
             if(walking === 0){
                 if(e.key === 'ArrowDown') {
                     setFrames(0);
-                    if (e.repeat) {
+                    if (e.repeat && props.moovable) {
                         animate(0);
                         setYCoords(yCoords + 1);
                     }
                 }
                 if(e.key === 'ArrowUp') {
                     setFrames(192);
-                    if (e.repeat) {
+                    if (e.repeat && props.moovable) {
                         animate(192);
                         setYCoords(yCoords - 1);
                     }
                 }
                 if(e.key === 'ArrowLeft') {
                     setFrames(96);
-                    if (e.repeat) {
+                    if (e.repeat && props.moovable) {
                         animate(96);
                         setXCoords(xCoords - 1);
                     }
                 }
                 if(e.key === 'ArrowRight') {
                     setFrames(288);
-                    if (e.repeat) {
+                    if (e.repeat && props.moovable) {
                         animate(288);
                         setXCoords(xCoords + 1);
                     }
