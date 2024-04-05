@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 // import Character from './Character';
 import Sam from './Sam';
 
-function Map() {
+function Map(props) {
 
     //starting coords for player
-    const [xCoords, setXCoords] = useState(16)
-    const [yCoords, setYCoords] = useState(16)
+    const [xCoords, setXCoords] = useState(props.start.x)
+    const [yCoords, setYCoords] = useState(props.start.y)
 
     const [xSteps, setXSteps] = useState(xCoords * -32)
     const [ySteps, setYSteps] = useState(yCoords * -32)
@@ -36,9 +36,9 @@ function Map() {
         getData();
     }, [])
 
-    useEffect(() => {
-        console.log(walls)
-    }, [walls])
+    // useEffect(() => {
+    //     console.log(walls)
+    // }, [walls])
 
     useEffect(() => {
         const handleResize = () => {
@@ -156,7 +156,7 @@ function Map() {
                 }
             }
         
-        console.log(xCoords, yCoords)
+        // console.log(xCoords, yCoords)
         document.addEventListener('keydown', handleKeyDown);
             
         // Don't forget to clean up
@@ -174,6 +174,7 @@ function Map() {
                     left: 0,
                     width:'100%',
                     height:'100%',
+                    backgroundColor: 'black',
                     objectFit: 'none',
                     objectPosition: `${windowDimensions.width /2 + xSteps}px ${windowDimensions.height / 2 + 32 + ySteps}px`,
                 }}
