@@ -20,6 +20,21 @@ function Map(props) {
         height: undefined
     });
 
+    //gestion du zoom
+    const [scale, setScale] = useState(2);
+    const min = .5;
+    const max = 2;
+    const handleWheel = (e) => {
+        e.preventDefault();
+        const newScale = Math.min(Math.max(min, scale + e.deltaY * -0.01), max);
+        setScale(newScale);
+    };
+    const handlePinch = (e) => {
+        e.preventDefault();
+        const newScale = Math.min(Math.max(min, scale + (e.touches[0].clientY - e.touches[1].clientY) * -0.01), max);
+        setScale(newScale);
+    };
+
     useEffect(() => {
         const getData = () => {
             fetch('walls.json'
@@ -163,37 +178,42 @@ function Map(props) {
         return function cleanup() {
           document.removeEventListener('keydown', handleKeyDown);
         }
-      }, [xCoords, yCoords, xSteps, ySteps, mapMooving, walls]);
+    }, [xCoords, yCoords, xSteps, ySteps, mapMooving, walls]);
+
 
     return (
-        <div>
-            <img
-                style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width:'100%',
-                    height:'100%',
-                    backgroundColor: 'black',
-                    objectFit: 'none',
-                    objectPosition: `${windowDimensions.width /2 + xSteps}px ${windowDimensions.height / 2 + 32 + ySteps}px`,
-                }}
-                src='/floor.png' 
-            />
-            {/* <Character /> */}
-            <Sam xCoords={xCoords} yCoords={yCoords} moovable={moovable} />
-            <img
-                style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    zIndex: 2,
-                    objectFit: 'none',
-                    objectPosition: `${windowDimensions.width /2 + xSteps}px ${windowDimensions.height / 2 +32 + ySteps}px`,
-                }}
-                src='/foreground.png' 
-            />
-            
+        <div onWheel={handleWheel}
+            onTouchMove={handlePinch}
+            style={{width: '100%', height: '100%', overflow: 'hidden', touchAction: 'none', position: 'relative',}}>
+            <div style={{transform: `scale(${scale})`, transformOrigin: '50vw 50vh',}}>
+                <img
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        // width:'100%',
+                        // height:'100%',
+                        backgroundColor: 'black',
+                        objectFit: 'none',
+                        objectPosition: `${windowDimensions.width /2 + xSteps}px ${windowDimensions.height / 2 + 32 + ySteps}px`,
+                    }}
+                    src='/floor.png' 
+                />
+                {/* <Character /> */}
+                <Sam xCoords={xCoords} yCoords={yCoords} moovable={moovable} />
+                <img
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        zIndex: 2,
+                        objectFit: 'none',
+                        objectPosition: `${windowDimensions.width /2 + xSteps}px ${windowDimensions.height / 2 +32 + ySteps}px`,
+                    }}
+                    src='/foreground.png' 
+                />
+                
+            </div>
         </div>
     );
 }
