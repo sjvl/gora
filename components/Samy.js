@@ -76,22 +76,18 @@ function Samy(props) {
     }, [props.dir]);
 
     return (
-        <div>
-            <img className={styles.avatar} style={{ objectPosition: `-${frames}px` }} src='/sam.png' />
-            {/* <div className={styles.tooltip} style={{ top: `calc(50vh - ${20 * props.antiScale * props.antiScale }px - 64px)` }}> */}
-            <div className={styles.tooltip}>
-                {props.cam &&
-                    <div style={{ display: 'flex', backgroundColor: 'rgba(255,255,255,0.5)', padding: `${3 * props.antiScale}px`, borderRadius: `${3 * props.antiScale}px` }}>
-                        <img
-                            style={{ objectFit: 'cover', backgroundColor: 'white', width: `${64 * props.antiScale}px` }}
-                            src='/cam.png'
-                        />
-                    </div>
-                }
-                <span style={{ color: 'white', backgroundColor: 'rgba(0,0,0,0.5)', fontSize: `${6 * props.antiScale}px`, padding: `${3 * props.antiScale}px ${6 * props.antiScale}px`, borderRadius: `${10 * props.antiScale}px`, marginTop: `${2 * props.antiScale}px` }}>
-                    {name}
-                </span>
-            </div>         
+        <div className={styles.avatar}>
+            <img  style={{ zIndex: 1, width:'32px', height:'64px', objectPosition: `-${frames}px`,  objectFit: 'none' }} src='/sam.png' />
+            {props.cam && 
+            <span style={{ position: 'absolute', zIndex: 4, bottom: `${95 + props.antiScale * props.antiScale}%`, left: '50%', transform: 'translateX(-50%)' }}>
+                <img
+                    style={{ objectFit: 'cover', backgroundColor: 'white', width: `${48 * props.antiScale}px`, borderRadius: `${3 * props.antiScale}px` }}
+                    src='/cam.png'
+                />
+            </span>}
+            <span style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 5, color: 'white', fontSize: `${6 * props.antiScale}px`, textAlign: 'center', borderRadius: `${6 * props.antiScale}px`, padding: `${3 * props.antiScale}px ${6 * props.antiScale}px`, position: 'absolute', bottom: '75%', left: '50%', transform: 'translateX(-50%)' }}>
+                {name}
+            </span>
         </div>
     );
 }

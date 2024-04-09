@@ -1,11 +1,7 @@
 .avatar {
-    z-index: 1;
     position: absolute;
     top: 50vh;
     left: 50vw;
-    width:32px;
-    height:64px;
-    object-fit: none;
 }
 
 .tooltip {

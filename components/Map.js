@@ -22,6 +22,8 @@ function Map(props) {
     const [meetingsTiles, setTiles] = useState(props.meetingsTiles)
     const [cam, setCam] = useState(false)
 
+    const [socket, setSocket] = useState([{name: 'Mathieu', X: 10, Y: 12, dir: 'down'}, {name: 'Lionel', X: 14, Y: 14, dir: 'down'}])
+
 
     useEffect(() => {
         getData();
@@ -204,10 +206,11 @@ function Map(props) {
     }, [xCoords, yCoords, xSteps, ySteps, mapMooving, walls]);
 
 
-    let X = 10;
-    let Y = 12; 
-    let left = windowDimensions.width /2 + xSteps - 2 + (X * 32);
-    let top = windowDimensions.height /2 + ySteps + (Y * 32);
+    const people = socket.map((e,i) => <Character key={i} name={e.name} dir={e.dir} left={windowDimensions.width /2 + xSteps - 2 + (e.X * 32)} top={windowDimensions.height /2 + ySteps + (e.Y * 32)} cam={true} antiScale={antiScale} />);
+    // let X = 10;
+    // let Y = 12; 
+    // let left = windowDimensions.width /2 + xSteps - 2 + (X * 32);
+    // let top = windowDimensions.height /2 + ySteps + (Y * 32);
 
 
     return (
@@ -220,13 +223,14 @@ function Map(props) {
                     src='/floor.png' 
                 />
 
-                <Character left={left} top={top}/>
-
-                <Samy dir={dir} moovable={moovable} cam={cam} antiScale={antiScale}/>
-
                 <img style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`, zIndex: 2 }}
                     src='/foreground.png' 
                 />
+                
+                {people}
+
+                <Samy dir={dir} moovable={moovable} cam={cam} antiScale={antiScale}/>
+
 
                 <div className={cam ? styles.fadeIn : styles.fadeOut} style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`,  zIndex: 3 }}>
                     {meetingsTiles}
