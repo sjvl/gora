@@ -1,5 +1,7 @@
+import styles from '../styles/Map.module.css';
 import { useEffect, useState } from 'react';
 import Samy from './Samy';
+import Character from './Character';
 
 function Map(props) {
 
@@ -20,20 +22,7 @@ function Map(props) {
     const [meetingsTiles, setTiles] = useState(props.meetingsTiles)
     const [cam, setCam] = useState(false)
 
-    const getData = () => {
-        fetch('walls.json'
-        ,{
-          headers : { 
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-           }
-        }
-        )
-        .then((data) => data.json())
-        .then((json) => {
-            setWalls(json); 
-        })
-    };
+
     useEffect(() => {
         getData();
 
@@ -53,13 +42,13 @@ function Map(props) {
 
     //gestion du zoom
     const [scale, setScale] = useState(2);
-    const [antiScale, setAntiScale] = useState(.5);
-    const min = .5;
-    const max = 3;
-
+    const [antiScale, setAntiScale] = useState(2);
+    const min = .5; const max = 3;
     const remap = (value) => {
-        return max + (min - max) * ((value - min) / (max - min));
+        let min2 = 3.5
+        let max2 = 1
         //return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1))
+        return min2 + (max2 - min2) * ((value - min) / (max - min))
     };
     const handleWheel = (e) => {
         // e.preventDefault();
@@ -75,11 +64,27 @@ function Map(props) {
         setScale(newScale);
         setAntiScale(newAntiScale)
     };
+
+    //initialization
     const handleResize = () => {
         setWindowDimensions({
           width: window.innerWidth,
           height: window.innerHeight
         });
+    };
+    const getData = () => {
+        fetch('walls.json'
+        ,{
+          headers : { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+           }
+        }
+        )
+        .then((data) => data.json())
+        .then((json) => {
+            setWalls(json); 
+        })
     };
 
 
@@ -195,8 +200,14 @@ function Map(props) {
           document.removeEventListener('keydown', handleKeyDown);
           setDir('')
         }
+
     }, [xCoords, yCoords, xSteps, ySteps, mapMooving, walls]);
 
+
+    let X = 10;
+    let Y = 12; 
+    let left = windowDimensions.width /2 + xSteps - 2 + (X * 32);
+    let top = windowDimensions.height /2 + ySteps + (Y * 32);
 
 
     return (
@@ -209,15 +220,17 @@ function Map(props) {
                     src='/floor.png' 
                 />
 
-                <Samy dir={dir} moovable={moovable} cam={cam} antiScale={antiScale}/>
+                <Character left={left} top={top}/>
 
-                <div style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px` }}>
-                    {cam && meetingsTiles}
-                </div>
+                <Samy dir={dir} moovable={moovable} cam={cam} antiScale={antiScale}/>
 
                 <img style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`, zIndex: 2 }}
                     src='/foreground.png' 
                 />
+
+                <div className={cam ? styles.fadeIn : styles.fadeOut} style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`,  zIndex: 3 }}>
+                    {meetingsTiles}
+                </div>
                 
             </div>
         </div>

@@ -78,22 +78,19 @@ function Samy(props) {
     return (
         <div>
             <img className={styles.avatar} style={{ objectPosition: `-${frames}px` }} src='/sam.png' />
-            <div className={styles.tooltip} style={{ top: `calc(50vh - ${20 * props.antiScale * props.antiScale }px - 64px)` }}>
-                {props.cam ?
-                    <div style={{ display: 'flex', backgroundColor: 'rgba(255,255,255,0.5)', padding: `calc(${props.antiScale} * 4px)`, borderRadius: `calc(${props.antiScale} * 5px)` }}>
+            {/* <div className={styles.tooltip} style={{ top: `calc(50vh - ${20 * props.antiScale * props.antiScale }px - 64px)` }}> */}
+            <div className={styles.tooltip}>
+                {props.cam &&
+                    <div style={{ display: 'flex', backgroundColor: 'rgba(255,255,255,0.5)', padding: `${3 * props.antiScale}px`, borderRadius: `${3 * props.antiScale}px` }}>
                         <img
-                            style={{ objectFit: 'cover', backgroundColor: 'white', width:`calc(2* ${props.antiScale} * 64px)`, height:`calc(2* ${props.antiScale} * 48px)` }}
+                            style={{ objectFit: 'cover', backgroundColor: 'white', width: `${64 * props.antiScale}px` }}
                             src='/cam.png'
                         />
                     </div>
-                :
-                    <div style={{ display: 'flex', padding: `calc(${props.antiScale} * 4px)`, borderRadius: `calc(${props.antiScale} * 5px)` }}>
-                        <div style={{ width:`calc(2* ${props.antiScale} * 64px)`, height:`calc(2* ${props.antiScale} * 48px)` }}></div>
-                    </div>
                 }
-                <p style={{ color: 'white', backgroundColor: 'rgba(0,0,0,0.5)', fontSize: `calc(${props.antiScale} * 12px)`, padding: `calc(${props.antiScale} * 4px) calc(${props.antiScale} * 10px)`, borderRadius: `calc(${props.antiScale} * 10px)` }}>
+                <span style={{ color: 'white', backgroundColor: 'rgba(0,0,0,0.5)', fontSize: `${6 * props.antiScale}px`, padding: `${3 * props.antiScale}px ${6 * props.antiScale}px`, borderRadius: `${10 * props.antiScale}px`, marginTop: `${2 * props.antiScale}px` }}>
                     {name}
-                </p>
+                </span>
             </div>         
         </div>
     );

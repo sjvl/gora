@@ -1,7 +1,7 @@
-function Intile(props) {
+function MeetTiles(props) {
 
     let color = 'transparent';
-    if(props.isClicked === 'A') color = 'orange'
+    if(props.isClicked !== 'A') color = 'black'
 
     return (
         <div
@@ -12,7 +12,6 @@ function Intile(props) {
                 position: 'absolute',
                 top: props.y * 32,
                 left: props.x * 32,
-                opacity: '.2',
                 backgroundColor: `${color}`
             }}
         >
@@ -20,4 +19,4 @@ function Intile(props) {
     )
 }
 
-export default Intile;
+export default MeetTiles;

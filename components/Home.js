@@ -1,5 +1,5 @@
 import styles from '../styles/Home.module.css';
-import Intile from './Intile';
+import MeetTiles from './MeetTiles';
 import Loader from './Loader';
 import Map from './Map';
 import { useEffect, useState } from 'react';
@@ -34,7 +34,7 @@ function Home() {
                 setTimeout(() => {
                     setLoading(false)
                 }, 2000);
-                const gridSquares = json.col.map((row,y) => row.map((col,x) => <Intile key={`tile_${x}_${y}`} x={x} y={y} isClicked={col}/>));
+                const gridSquares = json.col.map((row,y) => row.map((col,x) => <MeetTiles key={`tile_${x}_${y}`} x={x} y={y} isClicked={col}/>));
                 console.log(gridSquares)
                 setMeetingsTiles(gridSquares);
                 let starts = [];
