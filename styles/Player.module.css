@@ -1,0 +1,22 @@
+.avatar {
+    z-index: 1;
+    position: absolute;
+    top: 50vh;
+    left: 50vw;
+    width:32px;
+    height:64px;
+    object-fit: none;
+}
+
+.tooltip {
+    position: absolute;
+    z-index: 4;
+    left: 16px;
+    width: 100vw;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}

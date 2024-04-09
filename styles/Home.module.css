@@ -1,29 +1,39 @@
 .main {
-  /* overflow: hidden; */
-
-  display: flex;
-  width: 100vw;
   height: 100vh;
-  margin: 0;
-  padding: 0;
+  display: flex;
+  background-color: whitesmoke;
+}
 
-  flex-direction: column;
-  justify-content: center;
+.menu {
+  position: fixed;
+  z-index: 10;
+  background-color: white;
+  width: 100vw;
+  height: 64px;
+  display: flex;
+  padding: 12px;
   align-items: center;
+  justify-content: space-around;
 }
 
 .title {
-  position: fixed;
-  z-index: 4;
-  line-height: 1.15;
-  font-size: 4rem;
+  cursor: pointer;
 }
 
-.title a {
-  color: #0070f3;
-  text-decoration: none;
+.title:hover {
+  color : blueviolet;
 }
 
-.title a:hover, .title a:focus, .title a:active {
-  text-decoration: underline;
+.profile {
+  cursor: pointer;
+  height: 48px;
+  display: flex;
+  padding: 0 12px;
+  background-color: mediumpurple;
+  border-radius: 10px;
+}
+
+.profile:hover {
+  background-color: blueviolet;
+  color: whitesmoke;
 }

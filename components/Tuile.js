@@ -1,4 +1,4 @@
-function Tile(props) {
+function Tuile(props) {
 
     let color = 'transparent';
     if(props.isClicked === 1) color = 'purple'
@@ -33,4 +33,4 @@ function Tile(props) {
     )
 }
 
-export default Tile;
+export default Tuile;
