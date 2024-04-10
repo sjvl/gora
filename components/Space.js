@@ -1,4 +1,4 @@
-import styles from '../styles/Home.module.css';
+import styles from '../styles/Space.module.css';
 import TileArea from './TileArea';
 import Loader from './Loader';
 import Map from './Map';

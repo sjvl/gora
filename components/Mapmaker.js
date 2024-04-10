@@ -1,4 +1,4 @@
-import styles from '../styles/Home.module.css';
+import styles from '../styles/Space.module.css';
 import React, { useEffect, useState, useRef } from 'react';
 import Tilemaker from './Tilemaker'
 import { useRouter } from 'next/router';
