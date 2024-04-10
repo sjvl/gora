@@ -1,7 +1,7 @@
-import Home from '../components/Home';
+import Space from '../components/Space';
 
 function Index() {
-  return <Home />;
+  return <Space />;
 }
 
 export default Index;

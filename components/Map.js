@@ -1,6 +1,6 @@
 import styles from '../styles/Map.module.css';
 import { useEffect, useState } from 'react';
-import Samy from './Samy';
+import Player from './Player';
 import Character from './Character';
 
 function Map(props) {
@@ -206,7 +206,7 @@ function Map(props) {
     }, [xCoords, yCoords, xSteps, ySteps, mapMooving, walls]);
 
 
-    const people = socket.map((e,i) => <Character key={i} name={e.name} dir={e.dir} left={windowDimensions.width /2 + xSteps - 2 + (e.X * 32)} top={windowDimensions.height /2 + ySteps + (e.Y * 32)} cam={true} antiScale={antiScale} />);
+    const people = socket.map((e,i) => <Character key={i} name={e.name} dir={e.dir} left={windowDimensions.width /2 + xSteps + (e.X * 32)} top={windowDimensions.height /2 + ySteps + (e.Y * 32)} cam={true} antiScale={antiScale} />);
     // let X = 10;
     // let Y = 12; 
     // let left = windowDimensions.width /2 + xSteps - 2 + (X * 32);
@@ -229,7 +229,7 @@ function Map(props) {
                 
                 {people}
 
-                <Samy dir={dir} moovable={moovable} cam={cam} antiScale={antiScale}/>
+                <Player dir={dir} moovable={moovable} cam={cam} antiScale={antiScale}/>
 
 
                 <div className={cam ? styles.fadeIn : styles.fadeOut} style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`,  zIndex: 3 }}>

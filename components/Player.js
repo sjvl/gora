@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styles from '../styles/Player.module.css';
 
 
-function Samy(props) {
+function Player(props) {
     const [name, setName] = useState('Samuel')
 
     const [frames, setFrames] = useState(2)
@@ -92,4 +92,4 @@ function Samy(props) {
     );
 }
 
-export default Samy;
+export default Player;

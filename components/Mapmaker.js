@@ -1,8 +1,13 @@
-import styles from '../styles/Mapmaker.module.css';
+import styles from '../styles/Home.module.css';
 import React, { useEffect, useState, useRef } from 'react';
-import Tuile from './Tuile'
+import Tilemaker from './Tilemaker'
+import { useRouter } from 'next/router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClose, faEye, faFileExport, faFileImport, faMapMarker, faSave, faThLarge, faUsers } from '@fortawesome/free-solid-svg-icons';
+
 
 function Mapmaker() {
+    const router = useRouter();
     const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
     const gridSize = 32;
     const [specs, setSpecs] = useState([]);
@@ -147,26 +152,57 @@ function Mapmaker() {
             // Clean up
         };
     }, []);
-    const gridSquares = specs.map((row,y) => row.map((col,x) => <Tuile selectTile={selectTile} key={`tile_${x}_${y}`} x={x} y={y} isClicked={col}/>));
+    const gridSquares = specs.map((row,y) => row.map((col,x) => <Tilemaker selectTile={selectTile} key={`tile_${x}_${y}`} x={x} y={y} isClicked={col}/>));
     
     return (
         <div>
             <div style={{position: 'fixed', zIndex: 10, backgroundColor: 'white', width: '100%', height: '64px', display: 'flex', padding: '12px', alignItems: 'center', justifyContent: 'space-around'}}>
                 <h2>map maker</h2>
-                <div>
-                    <button className={styles.button} style={{backgroundColor: `${editWallsStyle}`}} onClick={handleEditWalls}>Edit walls</button>
-                    <button className={styles.button} style={{backgroundColor: `${editStartsStyle}`}} onClick={handleEditStarts}>Edit starts</button>
-                    <button className={styles.button} style={{backgroundColor: `${editAreasStyle}`}} onClick={handleEditAreas}>Edit areas</button>
+                <div style={{display: 'flex'}}>
+                    <button className={styles.button} style={{backgroundColor: `${editWallsStyle}`}} onClick={handleEditWalls}>
+                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faThLarge}/>
+                        <div className={styles.tooltip}>Edit&nbsp;walls</div>
+                    </button>
+                    <button className={styles.button} style={{backgroundColor: `${editStartsStyle}`}} onClick={handleEditStarts}>
+                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faMapMarker}/>
+                        <div className={styles.tooltip}>Edit&nbsp;starts</div>
+                    </button>
+                    <button className={styles.button} style={{backgroundColor: `${editAreasStyle}`}} onClick={handleEditAreas}>
+                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faUsers}/>
+                        <div className={styles.tooltip}>Edit&nbsp;areas</div>
+                    </button>
                 </div>
-                <div>
-                    <button className={styles.button} style={{backgroundColor: `${showGroundStyle}`}} onClick={handleShowGround}>Show ground</button>
-                    <button className={styles.button} style={{backgroundColor: `${showForegroundStyle}`}} onClick={handleShowForeground}>Show foreground</button>
+                <div style={{display: 'flex'}}>
+                    <button className={styles.button} style={{backgroundColor: `${showGroundStyle}`}} onClick={handleShowGround}> 
+                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faEye}/> 
+                        <div className={styles.tooltip}>Ground&nbsp;visibility</div>
+                    </button>
+                    <button className={styles.button} style={{backgroundColor: `${showForegroundStyle}`}} onClick={handleShowForeground}> 
+                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faEye}/> 
+                        <div className={styles.tooltip}>Foreground&nbsp;visibility</div>
+                    </button>
                 </div>
-                <div>
+                <div style={{display: 'flex'}}>
                     {/* <button>Import image</button> */}
-                    <button className={styles.button} onClick={importJson}>Import json</button>
-                    <input type="file" accept="application/json" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange}/>
-                    <button className={styles.button} onClick={() => exportJson()}>Export json</button>
+                    <button className={styles.button} onClick={importJson}> 
+                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faFileImport}/> 
+                        <div className={styles.tooltip}>Import&nbsp;json</div>
+                        <input type="file" accept="application/json" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange}/>
+                    </button>
+                    <button className={styles.button} onClick={() => exportJson()}> 
+                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faFileExport}/> 
+                        <div className={styles.tooltip}>Export&nbsp;json</div>
+                    </button>
+                </div>
+                <div style={{display: 'flex'}}>
+                    <button className={styles.button}> 
+                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faSave}/>
+                        <div className={styles.tooltip}>Contactez&nbsp;le backend&nbsp;dev</div>
+                    </button>
+                    <button className={styles.button} onClick={()=>{router.push("/")}}> 
+                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faClose}/>
+                        <div className={styles.tooltip}>Close&nbsp;map&nbsp;maker</div>
+                    </button>
                 </div>
             </div>
 

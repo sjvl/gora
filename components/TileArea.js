@@ -1,4 +1,4 @@
-function MeetTiles(props) {
+function TileArea(props) {
 
     let color = 'transparent';
     if(props.isClicked !== 'A') color = 'black'
@@ -19,4 +19,4 @@ function MeetTiles(props) {
     )
 }
 
-export default MeetTiles;
+export default TileArea;
