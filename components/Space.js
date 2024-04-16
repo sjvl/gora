@@ -45,7 +45,7 @@ function Space() {
                     setLoading(false)
                 }, 3000);
                 const gridSquares = json.col.map((row,y) => row.map((col,x) => <TileArea key={`tile_${x}_${y}`} x={x} y={y} isClicked={col}/>));
-                console.log(gridSquares)
+                // console.log(gridSquares)
                 setMeetingsTiles(gridSquares);
                 let starts = [];
                 for (let y = 0; y < json.col.length; y++) {

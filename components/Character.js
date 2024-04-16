@@ -1,9 +1,13 @@
 function Character(props) {
+    let pos = -2;
+    if(props.dir === 'right') pos = -290;
+    if(props.dir === 'left') pos = -98;
+    if(props.dir === 'up') pos = -194;
 
     return (
         <div>
             <div style={{ position: 'fixed', top: `${props.top}px`, left: `${props.left}px` }}>
-                <img style={{ width: '32px', height:'64px', objectFit: 'none', objectPosition: '-2px' }}
+                <img style={{ width: '32px', height:'64px', objectFit: 'none', objectPosition: `${pos}px` }}
                     src='/sam.png'
                 />
                 {props.cam && 

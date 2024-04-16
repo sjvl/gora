@@ -1,4 +1,7 @@
+import { useState } from "react";
+
 function Tilemaker(props) {
+    const [on, setOn] = useState(.2)
 
     let color = 'transparent';
     if(props.isClicked === 1) color = 'purple'
@@ -16,10 +19,12 @@ function Tilemaker(props) {
                 // console.log(e.target.id);
             }}
             onMouseEnter={(e) => {
-                handleClick(e.target.id);
+                    // handleClick(e.target.id);
+                    setOn(1)
             }}
             onMouseLeave={(e) => {
-                handleClick(e.target.id);
+                    // handleClick(e.target.id);
+                    setOn(.2)
             }}
             id={`${props.x};${props.y}`}
             style={{
@@ -29,9 +34,9 @@ function Tilemaker(props) {
                 top: props.y * 32,
                 left: props.x * 32,
                 zIndex: 3,
-                border: '1px solid rgba(250, 250, 250, .4)',
+                border: `1px solid rgba(255, 255, 255, ${on})`,
                 boxSizing: 'border-box',
-                opacity: '.5',
+                opacity: `.5`,
                 backgroundColor: `${color}`
             }}
         >

@@ -20,9 +20,11 @@ function Map(props) {
 
     const [walls, setWalls] = useState(undefined)
     const [meetingsTiles, setTiles] = useState(props.meetingsTiles)
+    const [socket, setSocket] = useState([{name: 'Mathieu', X: 11, Y: 12, dir: 'left', cam: false}, {name: 'Lionel', X: 14, Y: 14, dir: 'down' , cam: false}])
+    
+    const [areas, setAreas] = useState(false)
     const [cam, setCam] = useState(false)
 
-    const [socket, setSocket] = useState([{name: 'Mathieu', X: 10, Y: 12, dir: 'down'}, {name: 'Lionel', X: 14, Y: 14, dir: 'down'}])
 
 
     useEffect(() => {
@@ -89,112 +91,160 @@ function Map(props) {
         })
     };
 
-
-    function moveX(dir) {
-        //check if a move in X is possible depending of dir
-        let mooveX = walls.col[yCoords];
-        let futureX = xCoords - dir;
-        let go = false;
-        if(mooveX[futureX] !== 1) go = true;
-        setMoovable(go);
-        let cam = false;
-        if(mooveX[futureX] === 'A' || (mooveX[xCoords] === 'A' && mooveX[futureX] === 1) ) cam = true;
-        setCam(cam);
-
-        if((go)){
-            if( !mapMooving ){
-                setMapMooving(1);
-                setTimeout(() => {
-                    setXSteps(xSteps + (4 * dir))
-                }, 20);
-                setTimeout(() => {
-                    setXSteps(xSteps + (8) * dir)
-                }, 40);
-                setTimeout(() => {
-                    setXSteps(xSteps + (12 * dir))
-                }, 60);
-                setTimeout(() => {
-                    setXSteps(xSteps + (16 * dir))
-                }, 80);
-                setTimeout(() => {
-                    setXSteps(xSteps + (20 * dir))
-                }, 100);
-                setTimeout(() => {
-                    setXSteps(xSteps + (24 * dir))
-                }, 120);
-                setTimeout(() => {
-                    setXSteps(xSteps + (28 * dir))
-                }, 140);
-                setTimeout(() => {
-                    setXSteps(xSteps + (32 * dir))
-                    setXCoords(xCoords - dir)
-                    setMapMooving(0);
-                }, 160); 
-            }
-        }
+    function distanceManhattan(tile1, tile2) {
+        return Math.abs(tile2.X - tile1.X) + Math.abs(tile2.Y - tile1.Y);
     }
-    function moveY(dir) {
-        //check if a move in Y is possible depending of dir
-        let mooveY = walls.lin[xCoords];
-        let futureY = yCoords - dir;
-        let go = false;
-        if(mooveY[futureY] !== 1) go = true;
-        setMoovable(go);
-        let cam = false;
-        if(mooveY[futureY] === 'A' || (mooveY[yCoords] === 'A' && mooveY[futureY] === 1) ) cam = true;
-        setCam(cam);
 
-        if((go)){
-            if( !mapMooving ){
+    function move(dir) {
+        let actualTile = { X: xCoords, Y: yCoords };
+        let actualTileType = null;
+        if(walls) actualTileType = walls.lin[xCoords][yCoords];
+
+        let futureTile;
+        let futureCoord;
+        let stepsSetter;
+        let coordSetter;
+        let axisCoords;
+
+        let closestPlayer = null;
+        let closestDistance = 4;
+        let meetX;
+        let meetY;
+    
+        if (dir === 'left' || dir === 'right') {
+            futureTile = walls.col[yCoords];
+            futureCoord = xCoords - (dir === 'left' ? 1 : -1);
+            meetX = socket.map(e => e.X === futureCoord);
+            meetY = socket.map(e => e.Y === yCoords);
+            stepsSetter = setXSteps;
+            coordSetter = setXCoords;
+            axisCoords = xCoords;
+        } else if (dir === 'up' || dir === 'down') {
+            futureTile = walls.lin[xCoords];
+            futureCoord = yCoords - (dir === 'up' ? 1 : -1);
+            meetX = socket.map(e => e.X === xCoords);
+            meetY = socket.map(e => e.Y === futureCoord);
+            stepsSetter = setYSteps;
+            coordSetter = setYCoords;
+            axisCoords = yCoords;
+        } else {
+            // Nobody move! 
+            return;
+        }
+    
+        const indiceCommun = () => {
+            for (let i = 0; i < Math.min(meetX.length, meetY.length); i++) {
+                if (meetX[i] && meetY[i]) {
+                    return true; // meet
+                }
+            }
+            return false; // no meet
+        }
+        socket.forEach((otherPlayer) => {
+            const dist = distanceManhattan(actualTile, otherPlayer);
+            if (dist < closestDistance) {
+                closestDistance = dist;
+                closestPlayer = otherPlayer;
+            }
+        });
+    
+        let go = false;
+        let area = false;
+        let cam = false;
+
+        
+        
+        if (futureTile[futureCoord] !== 1 && indiceCommun() === false) go = true;
+        setMoovable(go);
+        
+        if(closestPlayer){
+            cam = true;
+            console.log(closestPlayer && closestPlayer.name, closestDistance)
+        }
+        if (futureTile[futureCoord] === 'A' || (futureTile[axisCoords] === 'A' && futureTile[futureCoord] === 1)) {
+            cam = true; 
+            area = true 
+        };
+        setAreas(area);
+        setCam(cam);
+    
+        if (go) {
+            if (!mapMooving) {
                 setMapMooving(1);
                 setTimeout(() => {
-                    setYSteps(ySteps + (4 * dir))
+                    stepsSetter(prevSteps => prevSteps + ((dir === 'up' || dir === 'left' ? 1 : -1)*4));
                 }, 20);
                 setTimeout(() => {
-                    setYSteps(ySteps + (8) * dir)
+                    stepsSetter(prevSteps => prevSteps + ((dir === 'up' || dir === 'left' ? 1 : -1)*4));
                 }, 40);
                 setTimeout(() => {
-                    setYSteps(ySteps + (12 * dir))
+                    stepsSetter(prevSteps => prevSteps + ((dir === 'up' || dir === 'left' ? 1 : -1)*4));
                 }, 60);
                 setTimeout(() => {
-                    setYSteps(ySteps + (16 * dir))
+                    stepsSetter(prevSteps => prevSteps + ((dir === 'up' || dir === 'left' ? 1 : -1)*4));
                 }, 80);
                 setTimeout(() => {
-                    setYSteps(ySteps + (20 * dir))
+                    stepsSetter(prevSteps => prevSteps + ((dir === 'up' || dir === 'left' ? 1 : -1)*4));
                 }, 100);
                 setTimeout(() => {
-                    setYSteps(ySteps + (24 * dir))
+                    stepsSetter(prevSteps => prevSteps + ((dir === 'up' || dir === 'left' ? 1 : -1)*4));
                 }, 120);
                 setTimeout(() => {
-                    setYSteps(ySteps + (28 * dir))
+                    stepsSetter(prevSteps => prevSteps + ((dir === 'up' || dir === 'left' ? 1 : -1)*4));
                 }, 140);
                 setTimeout(() => {
-                    setYSteps(ySteps + (32 * dir))
-                    setYCoords(yCoords - dir)
+                    stepsSetter(prevSteps => prevSteps + ((dir === 'up' || dir === 'left' ? 1 : -1)*4));
+                    coordSetter(prevCoord => prevCoord - (dir === 'up' || dir === 'left' ? 1 : -1));
                     setMapMooving(0);
                 }, 160);
             }
         }
     }
+    
     function handleKeyDown(e) {
-        if (!mapMooving){
+        if (!mapMooving) {
+            let dir;
             if (e.repeat) {
-                if(e.key === 'ArrowDown') {moveY(-1); setDir('down');}
-                if(e.key === 'ArrowUp') {moveY(+1); setDir('up');}
-                if(e.key === 'ArrowLeft') {moveX(+1); setDir('left');}
-                if(e.key === 'ArrowRight') {moveX(-1); setDir('right');}
+                switch (e.key) {
+                    case 'ArrowDown':
+                        dir = 'down';
+                        break;
+                    case 'ArrowUp':
+                        dir = 'up';
+                        break;
+                    case 'ArrowLeft':
+                        dir = 'left';
+                        break;
+                    case 'ArrowRight':
+                        dir = 'right';
+                        break;
+                    default:
+                        return;
+                }
             }else {
-                if(e.key === 'ArrowDown') setDir('d');
-                if(e.key === 'ArrowUp') setDir('u');
-                if(e.key === 'ArrowLeft') setDir('l');
-                if(e.key === 'ArrowRight') setDir('r');
+                switch (e.key) {
+                    case 'ArrowDown':
+                        dir = 'd';
+                        break;
+                    case 'ArrowUp':
+                        dir = 'u';
+                        break;
+                    case 'ArrowLeft':
+                        dir = 'l';
+                        break;
+                    case 'ArrowRight':
+                        dir = 'r';
+                        break;
+                    default:
+                        return;
+                }
             }
+            setDir(dir);
+            move(dir);
         }
     }
-
+    
     useEffect(() => {    
-        // console.log(dir, 'from map')
-        // console.log(xCoords, yCoords)
         document.addEventListener('keydown', handleKeyDown);
             
         // Don't forget to clean up
@@ -205,12 +255,12 @@ function Map(props) {
 
     }, [xCoords, yCoords, xSteps, ySteps, mapMooving, walls]);
 
+    // useEffect(() => {    
+    //     console.log(xCoords, yCoords)
+    // }, [xCoords, yCoords]);
 
-    const people = socket.map((e,i) => <Character key={i} name={e.name} dir={e.dir} left={windowDimensions.width /2 + xSteps + (e.X * 32)} top={windowDimensions.height /2 + ySteps + (e.Y * 32)} cam={true} antiScale={antiScale} />);
-    // let X = 10;
-    // let Y = 12; 
-    // let left = windowDimensions.width /2 + xSteps - 2 + (X * 32);
-    // let top = windowDimensions.height /2 + ySteps + (Y * 32);
+
+    const people = socket.map((e,i) => <Character key={i} name={e.name} dir={e.dir} left={windowDimensions.width /2 + xSteps + (e.X * 32)} top={windowDimensions.height /2 + ySteps + (e.Y * 32)} cam={e.cam} antiScale={antiScale} />);
 
 
     return (
@@ -232,7 +282,7 @@ function Map(props) {
                 <Player dir={dir} moovable={moovable} cam={cam} antiScale={antiScale}/>
 
 
-                <div className={cam ? styles.fadeIn : styles.fadeOut} style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`,  zIndex: 3 }}>
+                <div className={areas ? styles.fadeIn : styles.fadeOut} style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`,  zIndex: 3 }}>
                     {meetingsTiles}
                 </div>
                 
