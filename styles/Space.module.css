@@ -11,9 +11,9 @@
   width: 100vw;
   height: 64px;
   display: flex;
-  padding: 12px;
+  padding: 12px 10vw;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .title {
@@ -58,4 +58,37 @@
 }
 .button:hover .tooltip {
   display: block; /* Affiche le tooltip lorsque le bouton est survolé */
+}
+
+.modalinput {
+  border-radius: 10px;
+  border: 1px solid blanchedalmond;
+  height: 48px;
+  padding: 0 1vw;
+  background-color: transparent;
+  color: whitesmoke;
+  font-weight: bold;
+  font-size: 1em;
+  text-decoration: none;
+  outline: none;
+  margin: 10px;
+}
+
+.modalinput::placeholder{
+  color: whitesmoke;
+  font-weight: normal;
+}
+
+.avatar {
+  height: 64px;
+  width :64px;
+  overflow: hidden;
+  border-radius: 5px;
+  margin: 10px;
+  opacity: .5;
+}
+
+.avatar:hover {
+  opacity: 1;
+  cursor: pointer;
 }

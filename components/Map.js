@@ -2,10 +2,25 @@ import styles from '../styles/Map.module.css';
 import { useEffect, useState } from 'react';
 import Player from './Player';
 import Character from './Character';
+import TileArea from './TileArea';
+import { useRouter } from 'next/router';
+import { useSelector, useDispatch } from 'react-redux';
+
 
 function Map(props) {
 
     const [windowDimensions, setWindowDimensions] = useState({ width: undefined, height: undefined });
+    const router = useRouter();
+    const id = router.query.id
+    let spaceId
+    let spaceName
+    if(id){
+      spaceId = id[0];
+      spaceName = id[1]
+    }
+    const user = useSelector((state) => state.user.value);
+    const spaces = user.createdSpaces
+    const space = spaces.find(e => e._id === spaceId)
 
     //starting coords for player
     const [xCoords, setXCoords] = useState(props.start.x)
@@ -19,7 +34,9 @@ function Map(props) {
     const [dir, setDir] = useState('down')
 
     const [walls, setWalls] = useState(undefined)
-    const [meetingsTiles, setTiles] = useState(props.meetingsTiles)
+    const [meetingsTiles, setMeetingTiles] = useState(undefined)
+    const [ground, setGround] = useState('/floor.png')
+    const [foreground, setForeground] = useState('/foreground.png')
     const [socket, setSocket] = useState([{name: 'Mathieu', X: 11, Y: 12, dir: 'left', cam: false}, {name: 'Lionel', X: 14, Y: 14, dir: 'down' , cam: false}])
     
     const [areas, setAreas] = useState(false)
@@ -28,8 +45,6 @@ function Map(props) {
 
 
     useEffect(() => {
-        getData();
-
         // Vérifier si window est défini avant d'ajouter l'écouteur d'événement
         if (typeof window !== 'undefined') {
             setWindowDimensions({
@@ -43,6 +58,64 @@ function Map(props) {
             };
         }
     }, []);
+
+    useEffect(() => {
+        // owner user
+        if(space){
+            // standard space
+            if (space.walls.startsWith("/")){
+              fetch('/walls.json',
+                {headers : { 'Content-Type': 'application/json', 'Accept': 'application/json'}}
+              )
+              .then((data) => data.json())
+              .then((json) => {
+                setWalls(json);
+                const gridSquares = json.col.map((row,y) => row.map((col,x) => <TileArea key={`tile_${x}_${y}`} x={x} y={y} isClicked={col}/>));
+                setMeetingTiles(gridSquares);
+              })
+            }
+            // customized space
+            else {
+              let json = JSON.parse(space.walls)
+              setWalls(json);
+              const gridSquares = json.col.map((row,y) => row.map((col,x) => <TileArea key={`tile_${x}_${y}`} x={x} y={y} isClicked={col}/>));
+              setMeetingTiles(gridSquares);
+              setGround(space.ground);
+              setForeground(space.foreground);
+            }
+        }
+        // visiting user
+        else {
+          if(spaceId){
+            fetch(`http://localhost:3000/spaces/${spaceId}`)
+            .then((data) => data.json())
+            .then((data) => {
+                let json = data.space[0].walls
+                // standard space
+                if(json.startsWith("/")) {
+                    fetch('/walls.json', 
+                        {headers : { 'Content-Type': 'application/json', 'Accept': 'application/json'}}
+                    )
+                    .then((data) => data.json())
+                    .then((json) => {
+                        setWalls(json);
+                        const gridSquares = json.col.map((row,y) => row.map((col,x) => <TileArea key={`tile_${x}_${y}`} x={x} y={y} isClicked={col}/>));
+                        setMeetingTiles(gridSquares);
+                    })
+                }
+                // customized space
+                else {
+                    json = JSON.parse(json);
+                    setWalls(json);
+                    const gridSquares = json.col.map((row,y) => row.map((col,x) => <TileArea key={`tile_${x}_${y}`} x={x} y={y} isClicked={col}/>));
+                    setMeetingTiles(gridSquares);
+                    setGround(data.space[0].ground);
+                    setForeground(data.space[0].foreground);
+                }
+            })
+          }
+        };
+      },[space, spaceId])
 
     //gestion du zoom
     const [scale, setScale] = useState(2);
@@ -77,7 +150,7 @@ function Map(props) {
         });
     };
     const getData = () => {
-        fetch('walls.json'
+        fetch('http://localhost:3001/walls.json'
         ,{
           headers : { 
             'Content-Type': 'application/json',
@@ -87,7 +160,9 @@ function Map(props) {
         )
         .then((data) => data.json())
         .then((json) => {
-            setWalls(json); 
+            setWalls(json);
+            const gridSquares = json.col.map((row,y) => row.map((col,x) => <TileArea key={`tile_${x}_${y}`} x={x} y={y} isClicked={col}/>));
+            setMeetingTiles(gridSquares);
         })
     };
 
@@ -270,21 +345,23 @@ function Map(props) {
             style={{width: '100%', height: '100%', overflow: 'hidden', touchAction: 'none', position: 'relative'}}>
             <div style={{position :'fixed', transform: `scale(${scale})`, transformOrigin: '50vw 50vh'}}>
                 <img style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`, backgroundColor: 'whitesmoke'}}
-                    src='/floor.png' 
+                    src={ground}
                 />
 
                 <img style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`, zIndex: 2 }}
-                    src='/foreground.png' 
+                    src={foreground}
                 />
+
+                <div className={areas ? styles.fadeIn : styles.fadeOut} style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`, zIndex: 2 }}>
+                    {meetingsTiles}
+                </div>
                 
                 {people}
 
-                <Player dir={dir} moovable={moovable} cam={cam} antiScale={antiScale}/>
+                <Player dir={dir} moovable={moovable} cam={cam} antiScale={antiScale} pseudo={props.pseudo} avatar={props.avatar} />
 
 
-                <div className={areas ? styles.fadeIn : styles.fadeOut} style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`,  zIndex: 3 }}>
-                    {meetingsTiles}
-                </div>
+                
                 
             </div>
         </div>

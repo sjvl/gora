@@ -3,8 +3,6 @@ import styles from '../styles/Player.module.css';
 
 
 function Player(props) {
-    const [name, setName] = useState('Samuel')
-
     const [frames, setFrames] = useState(2)
     const [animating, setAnimating] = useState(0)
 
@@ -77,7 +75,7 @@ function Player(props) {
 
     return (
         <div className={styles.avatar}>
-            <img  style={{ zIndex: 1, width:'32px', height:'64px', objectPosition: `-${frames}px`,  objectFit: 'none' }} src='/sam.png' />
+            <img  style={{ zIndex: 1, width:'32px', height:'64px', objectPosition: `-${frames}px`,  objectFit: 'none' }} src={props.avatar} />
             {props.cam && 
             <span style={{ position: 'absolute', zIndex: 4, bottom: `${95 + props.antiScale * props.antiScale}%`, left: '50%', transform: 'translateX(-50%)' }}>
                 <img
@@ -86,7 +84,7 @@ function Player(props) {
                 />
             </span>}
             <span style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 5, color: 'white', fontSize: `${6 * props.antiScale}px`, textAlign: 'center', borderRadius: `${6 * props.antiScale}px`, padding: `${3 * props.antiScale}px ${6 * props.antiScale}px`, position: 'absolute', bottom: '75%', left: '50%', transform: 'translateX(-50%)' }}>
-                {name}
+                {props.pseudo}
             </span>
         </div>
     );

@@ -1,0 +1,110 @@
+.container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    justify-content: center;
+    color: white;
+    background: linear-gradient(blueviolet, mediumpurple);
+    padding: 3vw;
+}
+
+.login {
+    width: 40vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;    
+    align-items: flex-start;
+    padding: 0;
+}
+
+.title {
+    font-size: 8vh;
+    margin: 0;
+}
+
+.subtitle {
+    margin: 1vh 0 12vh 0;
+    font-size: 3vh;
+}
+
+.bluebutton {
+    border: 0;
+    border-radius: 10px;
+    width: 40%;
+    height: 40px;
+    background-color: blueviolet;
+    color: whitesmoke;
+    font-size: 1em;
+    font-weight: 600;
+    margin: 5px 0;
+}
+.bluebutton:hover {
+    color: blueviolet;
+    background-color: whitesmoke;
+    cursor: pointer;
+}
+
+.button {
+    border: 0;
+    border-radius: 10px;
+    width: 40%;
+    height: 40px;
+    background-color: rgb(89, 26, 149);
+    border: 1px solid blueviolet;
+    color: whitesmoke;
+    font-size: 1em;
+    font-weight: 600;
+    margin: 5px 0;
+}
+.button:hover {
+    color: blueviolet;
+    background-color: whitesmoke;
+    cursor: pointer;
+}
+
+
+/* modal */
+.modal {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(147, 112, 216, .8);
+    top: 0;
+}
+
+.modallogin {
+    width: 40vw;
+    background-color:rgb(89, 26, 149);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1vw 4vw 2vw 4vw;
+    border-radius: 10px;
+    z-index: 2;
+}
+
+.modalclose:hover {
+    cursor: pointer;
+    color: mediumpurple;
+}
+
+.modalinput {
+    border-radius: 5px;
+    border: 1px solid whitesmoke;
+    width: 32vw;
+    height: 40px;
+    margin: .5vw 0;
+    padding: 0 1vw;
+    background-color: transparent;
+    color: whitesmoke;
+    font-size: 1em;
+    text-decoration: none;
+	outline: none;
+}
+
+.modalinput::placeholder{
+    color: whitesmoke;
+}

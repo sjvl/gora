@@ -2,12 +2,26 @@ import styles from '../styles/Space.module.css';
 import React, { useEffect, useState, useRef } from 'react';
 import Tilemaker from './Tilemaker'
 import { useRouter } from 'next/router';
+import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faEye, faFileExport, faFileImport, faImage, faMapMarker, faSave, faThLarge, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faEye, faFileExport, faFileImage, faFileImport, faImage, faLayerGroup, faMapMarker, faSave, faThLarge, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { updateSpace } from '../reducers/user';
 
 
-function Mapmaker() {
+function Mapconfig() {
+    const dispatch = useDispatch(); 
     const router = useRouter();
+    const user = useSelector((state) => state.user.value);
+    const id = router.query.id
+    let spaceId
+    let spaceName
+    if(id){
+      spaceId = id[0];
+      spaceName = id[1]
+    }
+    const spaces = user.createdSpaces
+    const space = spaces.find(e => e._id === spaceId)
+
     const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
     const gridSize = 32;
     const [specs, setSpecs] = useState([]);
@@ -22,7 +36,29 @@ function Mapmaker() {
     const fileInputRef = useRef(null);
 
 
-    //edir tools
+    //read existing map
+    useEffect(()=>{
+        if(space && space.ground){setGround(space.ground)}
+        if(space && space.foreground){setForeground(space.foreground)}
+        if(space && space.walls){
+            //standard space
+            if (space.walls.startsWith("/")){
+                fetch(space.walls)
+                .then(res => res.json())
+                .then(data => {
+                    setSpecs(data.col)
+                })
+            }
+            //custom space
+            else{
+                let data = JSON.parse(space.walls)
+                setSpecs(data.col)
+            }
+        }
+    },[space])
+
+
+    //edit tools
     const selectTile = (id) => {
         let coords = id.split(';');
         let x = parseInt(coords[0]);
@@ -101,9 +137,17 @@ function Mapmaker() {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onloadend = () => { 
-                console.log(reader.result)
-                setGround(reader.result);
-                // dispatch(updateDraftImg({id, src: reader.result}));
+                fetch('http://localhost:3000/upload', {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ imageDataUrl: reader.result })
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                // console.log(data)
+                // console.log(data.imageUrl)
+                setGround(data.imageUrl);
+                });
             };
         }
     }
@@ -138,9 +182,18 @@ function Mapmaker() {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onloadend = () => { 
-                console.log(reader.result)
-                setForeground(reader.result);
-                // dispatch(updateDraftImg({id, src: reader.result}));
+                fetch('http://localhost:3000/upload', {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ imageDataUrl: reader.result })
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                // console.log(data)
+                // console.log(data.imageUrl)
+                setForeground(data.imageUrl);
+                handleShowForeground();
+                });
             };
         }
     }
@@ -153,55 +206,30 @@ function Mapmaker() {
         setShowForeground(!showForeground);
     }
 
-    //show ground button
-    let showGroundStyle = '';
-    if(showGround) showGroundStyle = 'blueviolet';
-    const handleShowGround = () => {
-        setShowGround(!showGround);
-    }
-
-    //export json
-    const exportJson = () => {
-        //renverser data et structurer le futur json
+    //save modifications
+    const handleSave = () => {
+        //generate walls.json
         const flipped = specs[0].map((col, index) => specs.map(lin => lin[index]));
         const jsonData = { lin: flipped, col: specs };
-
-        // Convertir le tableau en JSON
         const json = JSON.stringify(jsonData);
 
-        // Créer un blob et un lien invisible
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'walls.json');
+        // console.log('save')
+        // console.log('token:', user.token)
+        // console.log('_id:', spaceId)
+        // console.log('ground:', ground)
+        // console.log('foreground:', foreground)
+        // console.log('walls:', json)
 
-        // Simuler un clic sur le lien pour déclencher le téléchargement
-        document.body.appendChild(link);
-        link.click();
-
-        // Nettoyer
-        URL.revokeObjectURL(url);
-        document.body.removeChild(link);
-    };
-
-    //import json
-    const importJson = () => {
-        fileInputRef.current.click();
-    };
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const text = event.target.result;
-            const parsedJson = JSON.parse(text);
-            if(parsedJson.col){
-                if(parsedJson.col.length === imageSize.height/gridSize){
-                    setSpecs(parsedJson.col);
-                }else {alert("Oups.. This JSON doesn't match this map!");}
-            }else {alert("Oups.. This JSON doesn't match this map!");}
-        };
-        if(file)reader.readAsText(file);
+        fetch('http://localhost:3000/spaces/update', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ token: user.token, _id: spaceId, ground: ground, foreground: foreground, walls: json }),
+            // body: JSON.stringify({ token: user.token, _id: spaceId, ground: ground }),
+		})
+        .then(response => response.json())
+        .then(resp => {
+            dispatch(updateSpace({_id: spaceId, ground: ground, foreground: foreground, walls: json}))
+        })
     };
   
     //load img & generate grid
@@ -219,7 +247,7 @@ function Mapmaker() {
                 setSpecs(array);
 
             };
-            img.src = "floor.png"; 
+            img.src = ground; 
         };
     
         loadImage();
@@ -227,13 +255,13 @@ function Mapmaker() {
         return () => {
             // Clean up
         };
-    }, []);
+    }, [ground]);
     const gridSquares = specs.map((row,y) => row.map((col,x) => <Tilemaker selectTile={selectTile} key={`tile_${x}_${y}`} x={x} y={y} isClicked={col}/>));
     
     return (
         <div>
-            <div style={{position: 'fixed', zIndex: 10, backgroundColor: 'white', width: '100%', height: '64px', display: 'flex', padding: '12px', alignItems: 'center', justifyContent: 'space-around'}}>
-                <h2>map maker</h2>
+            <div className={styles.menu}>
+                <h1 className={styles.title} onClick={() => { user.id ? router.push(`/user/${user.id}`) : router.push(`/`) }}>g◍rá</h1>
                 <div style={{display: 'flex'}}>
                     <button className={styles.button} style={{backgroundColor: `${editWallsStyle}`}} onClick={handleEditWalls}>
                         <FontAwesomeIcon style={{fontSize: '20px'}} icon={faThLarge}/>
@@ -250,53 +278,36 @@ function Mapmaker() {
                 </div>
                 <div style={{display: 'flex'}}>
                     <button className={styles.button} onClick={handleGroundImg}>
-                        <FontAwesomeIcon icon={faImage} className={styles.reaction} />
+                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faFileImage}/>
                         <input type='file' accept="image/*" ref={imputGroundImage} onChange={(e)=>{ e.target.files[0] && (groundToDataUrl(e)); }}style={{display: 'none'}}/>
-                        <div className={styles.tooltip}>upload&nbsp;ground</div>
+                        <div className={styles.tooltip}>upload&nbsp;new&nbsp;ground</div>
                     </button>
                     {alert}
 
-                    <button className={styles.button} style={{backgroundColor: `${showGroundStyle}`}} onClick={handleShowGround}> 
-                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faEye}/> 
-                        <div className={styles.tooltip}>Ground&nbsp;visibility</div>
-                    </button>
-
                     <button className={styles.button} onClick={handleForgroundImg}>
-                        <FontAwesomeIcon icon={faImage} className={styles.reaction} />
+                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faFileImage}/>
                         <input type='file' accept="image/*" ref={inputForegroundImage} onChange={(e)=>{ e.target.files[0] && (foregroundToDataUrl(e)); }}style={{display: 'none'}}/>
-                        <div className={styles.tooltip}>upload&nbsp;foreground</div>
+                        <div className={styles.tooltip}>upload&nbsp;new&nbsp;foreground</div>
                     </button>
 
                     <button className={styles.button} style={{backgroundColor: `${showForegroundStyle}`}} onClick={handleShowForeground}> 
-                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faEye}/> 
+                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faLayerGroup}/> 
                         <div className={styles.tooltip}>Foreground&nbsp;visibility</div>
                     </button>
                 </div>
+
                 <div style={{display: 'flex'}}>
-                    {/* <button>Import image</button> */}
-                    <button className={styles.button} onClick={importJson}> 
-                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faFileImport}/> 
-                        <div className={styles.tooltip}>Import&nbsp;json</div>
-                        <input type="file" accept="application/json" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange}/>
-                    </button>
-                    <button className={styles.button} onClick={() => exportJson()}> 
-                        <FontAwesomeIcon style={{fontSize: '20px'}} icon={faFileExport}/> 
-                        <div className={styles.tooltip}>Export&nbsp;json</div>
-                    </button>
-                </div>
-                <div style={{display: 'flex'}}>
-                    <button className={styles.button}> 
+                    <button className={styles.button} onClick={()=>handleSave()}> 
                         <FontAwesomeIcon style={{fontSize: '20px'}} icon={faSave}/>
-                        <div className={styles.tooltip}>Contactez&nbsp;le backend&nbsp;dev</div>
+                        <div className={styles.tooltip}>Save&nbsp;changes</div>
                     </button>
-                    <button className={styles.button} onClick={()=>{router.push("/")}}> 
+                    <button className={styles.button} onClick={()=>{router.push(`/space/${spaceId}/${spaceName}`)}}> 
                         <FontAwesomeIcon style={{fontSize: '20px'}} icon={faClose}/>
                         <div className={styles.tooltip}>Close&nbsp;map&nbsp;maker</div>
                     </button>
                 </div>
             </div>
             
-
             <div style={{position: 'absolute', top: '64px', width: `${imageSize.width}`, height: `${imageSize.height}`}}>
                 {showGround && <img src={ground} />}
                 {showForeground && <img src={foreground} style={{position: 'absolute', top: '0px', zIndex: 2, opacity: '.4', filter: 'invert(50%) sepia(13%) saturate(3333%) hue-rotate(180deg) contrast(80%)'}}/>}
@@ -306,4 +317,4 @@ function Mapmaker() {
     );
 }
 
-export default Mapmaker;
+export default Mapconfig;

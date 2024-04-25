@@ -16,3 +16,23 @@
     padding: 5px 10px;
     color: blanchedalmond;
 }
+
+.menu {
+    position: fixed;
+    z-index: 10;
+    background-color: white;
+    width: 100vw;
+    height: 64px;
+    display: flex;
+    padding: 12px 10vw;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .title {
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  .title:hover {
+    color : blueviolet;
+  }
