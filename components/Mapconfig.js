@@ -137,7 +137,7 @@ function Mapconfig() {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onloadend = () => { 
-                fetch('http://localhost:3000/upload', {
+                fetch('https://gora-back.vercel.app/upload', {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ imageDataUrl: reader.result })
@@ -182,7 +182,7 @@ function Mapconfig() {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onloadend = () => { 
-                fetch('http://localhost:3000/upload', {
+                fetch('https://gora-back.vercel.app/upload', {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ imageDataUrl: reader.result })
@@ -220,7 +220,7 @@ function Mapconfig() {
         // console.log('foreground:', foreground)
         // console.log('walls:', json)
 
-        fetch('http://localhost:3000/spaces/update', {
+        fetch('https://gora-back.vercel.app/spaces/update', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ token: user.token, _id: spaceId, ground: ground, foreground: foreground, walls: json }),

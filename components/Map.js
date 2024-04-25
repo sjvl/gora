@@ -87,7 +87,7 @@ function Map(props) {
         // visiting user
         else {
           if(spaceId){
-            fetch(`http://localhost:3000/spaces/${spaceId}`)
+            fetch(`https://gora-back.vercel.app/spaces/${spaceId}`)
             .then((data) => data.json())
             .then((data) => {
                 let json = data.space[0].walls
@@ -150,7 +150,7 @@ function Map(props) {
         });
     };
     const getData = () => {
-        fetch('http://localhost:3001/walls.json'
+        fetch('https://gora-back.vercel.app/walls.json'
         ,{
           headers : { 
             'Content-Type': 'application/json',

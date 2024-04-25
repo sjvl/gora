@@ -26,7 +26,7 @@ function Login() {
     const validUser = user.token
 
     const handleRegister = () => {
-        fetch('http://localhost:3000/users/signup', {
+        fetch('https://gora-back.vercel.app/users/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userName: signUpUsername, password: signUpPassword }),
@@ -45,7 +45,7 @@ function Login() {
     } 
 
     const handleLogin = () => {
-        fetch('http://localhost:3000/users/signin', {
+        fetch('https://gora-back.vercel.app/users/signin', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ userName: signInUsername, password: signInPassword }),

@@ -112,7 +112,7 @@ function Space() {
       // visiting user
       else {
         if(spaceId){
-          fetch(`http://localhost:3000/spaces/${spaceId}`)
+          fetch(`https://gora-back.vercel.app/spaces/${spaceId}`)
           .then((data) => data.json())
           .then((data) => {
             //valid space

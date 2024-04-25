@@ -36,7 +36,7 @@ function User() {
 
 
     const handleNewSpace = () => {
-        fetch('http://localhost:3000/spaces/new', {
+        fetch('https://gora-back.vercel.app/spaces/new', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ spaceName: spaceName, token: user.token }),
@@ -86,7 +86,7 @@ function User() {
 
     const handleTrashSpace = () => {
 
-        fetch('http://localhost:3000/spaces/trash', {
+        fetch('https://gora-back.vercel.app/spaces/trash', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ _id: spaceToDelete.id, token: user.token }),
