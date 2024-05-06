@@ -1,8 +1,10 @@
 import Space from '../../components/Space';
+import io from 'socket.io-client';
+
 
 function SpaceId() {
-
-    return <Space />;
+    const socket = io('http://localhost:3000/');
+    return <Space socket={socket}/>;
 }
 
 export default SpaceId;

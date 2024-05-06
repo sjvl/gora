@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { trashVisitSpace, visitSpace } from '../reducers/user';
 
 
-function Space() {
+function Space(props) {
     const dispatch = useDispatch(); 
     const router = useRouter();
     const user = useSelector((state) => state.user.value);
@@ -33,6 +33,21 @@ function Space() {
     const [pseudo, setPseudo] = useState('')
     const [avatar, setAvatar] = useState('')
     const [hasJoined, setHasJoined] = useState(false)
+
+    useEffect(()=>{
+      if(props.socket){
+        props.socket.on('connect', () => {
+          console.log('Connected with socket ID:', props.socket.id);
+          props.socket.emit('join', spaceId);
+        });
+      }
+  
+  
+        // Il est important de fermer la connexion lorsque le composant est démonté
+        return () => {
+            props.socket.disconnect();
+        };
+    },[props.socket])
 
 
     useEffect(()=>{
@@ -83,7 +98,7 @@ function Space() {
       }else setStart({x: 1, y: 1})
     }
 
-    const invalidSapce = 
+    const invalidSpace = 
     <div style={{width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
       <div style={{fontSize: '48px'}}>404</div>
       <div>Oups.. you seem to be nowhere.</div>
@@ -182,7 +197,13 @@ function Space() {
       
       <input className={styles.modalinput} type="text" placeholder="your pseudo" onChange={(e) => setPseudo(e.target.value)} value={pseudo} />
       
-      <button className={styles.button} style={{margin: '10px'}} onClick={() => {if(avatar && pseudo){dispatch( visitSpace({...localSpace, localUser: {avatar, pseudo}}) ); setHasJoined(true)}}}>JOIN</button>
+      <button className={styles.button} style={{margin: '10px'}} onClick={() => {
+        if(avatar && pseudo){
+          dispatch( visitSpace({...localSpace, localUser: {avatar, pseudo}}) ); 
+          setHasJoined(true)}
+          const game = {room: spaceId, id: props.socket.id, name: pseudo, avatar: avatar, dir: 'd', X: start.x, Y: start.y};
+          props.socket.emit('data', game);
+        }}>JOIN</button>
     </div>;
 
     return (
@@ -228,8 +249,8 @@ function Space() {
             {!hasJoined  && goodId && avatarModal}
 
             {loading && <Loader/>}
-            {!loading && !goodId && invalidSapce}
-            {!loading && goodId && <Map start={start} pseudo={pseudo} avatar={avatar} />}
+            {!loading && !goodId && invalidSpace}
+            {!loading && goodId && <Map socket={props.socket} start={start} pseudo={pseudo} avatar={avatar} />}
         </main>
     );
 }

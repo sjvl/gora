@@ -1,14 +1,14 @@
 function Character(props) {
     let pos = -2;
-    if(props.dir === 'right') pos = -290;
-    if(props.dir === 'left') pos = -98;
-    if(props.dir === 'up') pos = -194;
+    if(props.dir.startsWith("r")) pos = -290; 
+    if(props.dir.startsWith("l")) pos = -98;
+    if(props.dir.startsWith("u")) pos = -194;
 
     return (
         <div>
             <div style={{ position: 'fixed', top: `${props.top}px`, left: `${props.left}px` }}>
                 <img style={{ width: '32px', height:'64px', objectFit: 'none', objectPosition: `${pos}px` }}
-                    src='/sam.png'
+                    src={props.avatar}
                 />
                 {props.cam && 
                 <span style={{ position: 'absolute', zIndex: 1, bottom: `${95 + props.antiScale * props.antiScale}%`, left: '50%', transform: 'translateX(-50%)' }}>

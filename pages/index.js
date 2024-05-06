@@ -6,7 +6,7 @@ function Index() {
           <Login />
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100vw', padding: '15vh 0'}}>
             <p style={{width: '40vw', fontSize: '18px'}}>
-              Just as the agora served as a central hub for learning, discourse, and community engagement in antiquity, 
+              Just as the agora was as a central hub for learning, discourse, and community engagement in antiquity, 
               Gorá aims to enhance this ethos in the digital age.
             </p>
             <p style={{width: '40vw', fontSize: '18px'}}>
