@@ -396,10 +396,6 @@ function Map(props) {
                 {people}
 
                 <Player dir={dir} moovable={moovable} cam={cam} antiScale={antiScale} pseudo={props.pseudo} avatar={props.avatar} />
-
-
-                
-                
             </div>
         </div>
     );

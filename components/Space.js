@@ -34,44 +34,15 @@ function Space(props) {
     const [avatar, setAvatar] = useState('')
     const [hasJoined, setHasJoined] = useState(false)
 
-    useEffect(()=>{
-      if(props.socket){
-        props.socket.on('connect', () => {
-          console.log('Connected with socket ID:', props.socket.id);
-          props.socket.emit('join', spaceId);
-        });
-      }
-  
-  
-        // Il est important de fermer la connexion lorsque le composant est démonté
-        return () => {
-            props.socket.disconnect();
-        };
-    },[props.socket])
-
-
-    useEffect(()=>{
-      const visitedSpaces = user.visitedSpaces
-      const visitedSpace = visitedSpaces.find(e => e._id === spaceId)
-      let visitedAvatar = ''
-      let visitedPseudo = ''
-      if(visitedSpace){
-        visitedAvatar = visitedSpace.localUser.avatar;
-        visitedPseudo = visitedSpace.localUser.pseudo;
-      }
-      setPseudo(visitedPseudo);
-      setAvatar(visitedAvatar)
-      if(user.createdSpaces.find(e => e._id === spaceId)){
-        setIsOwner(true)
-      }else {setIsOwner(false)}
-    },[spaceId])
-
     //disable scroll on body
     useEffect(() => {
         // Ajouter la classe au body lorsque le composant est monté
         document.body.classList.add('bodyModified');
 
         return () => {
+          // Fermer la connexion lorsque le composant est démonté
+          props.socket.disconnect();
+
           // Supprimer la classe du body lorsque le composant est démonté
           document.body.classList.remove('bodyModified');
         };
@@ -105,6 +76,23 @@ function Space(props) {
     </div>
 
     useEffect(() => {
+      //// IS OWNER ////
+      const visitedSpaces = user.visitedSpaces
+      const visitedSpace = visitedSpaces.find(e => e._id === spaceId)
+      let visitedAvatar = ''
+      let visitedPseudo = ''
+      if(visitedSpace){
+        visitedAvatar = visitedSpace.localUser.avatar;
+        visitedPseudo = visitedSpace.localUser.pseudo;
+      }
+      setPseudo(visitedPseudo);
+      setAvatar(visitedAvatar)
+      if(user.createdSpaces.find(e => e._id === spaceId)){
+        setIsOwner(true)
+      }else {setIsOwner(false)}
+
+
+      //// SPACE PROPERTIES ////
       // owner user
       if(space){
         // console.log(space)
@@ -201,6 +189,7 @@ function Space(props) {
         if(avatar && pseudo){
           dispatch( visitSpace({...localSpace, localUser: {avatar, pseudo}}) ); 
           setHasJoined(true)}
+          props.socket.emit('join', spaceId);
           const game = {room: spaceId, id: props.socket.id, name: pseudo, avatar: avatar, dir: 'd', X: start.x, Y: start.y};
           props.socket.emit('data', game);
         }}>JOIN</button>
