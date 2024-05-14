@@ -45,9 +45,13 @@ function Map(props) {
     const [areas, setAreas] = useState(false)
     const [cam, setCam] = useState(false)
 
-    props.socket.on('otherPlayers', (otherPlayers) => {
-        setData(otherPlayers)
-    })
+    //get otherPlayers data
+    useEffect(()=>{
+        props.socket.on('otherPlayers', (otherPlayers) => {
+            console.log('otherPlayers')
+            setData(otherPlayers)
+        })
+    },[props.socket])
 
     useEffect(() => {
         // Vérifier si window est défini avant d'ajouter l'écouteur d'événement
