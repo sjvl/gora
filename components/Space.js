@@ -185,14 +185,20 @@ function Space(props) {
       
       <input className={styles.modalinput} type="text" placeholder="your pseudo" onChange={(e) => setPseudo(e.target.value)} value={pseudo} />
       
-      <button className={styles.button} style={{margin: '10px'}} onClick={() => {
-        if(avatar && pseudo){
-          dispatch( visitSpace({...localSpace, localUser: {avatar, pseudo}}) ); 
-          setHasJoined(true)}
-          props.socket.emit('join', spaceId);
-          const game = {room: spaceId, id: props.socket.id, name: pseudo, avatar: avatar, dir: 'd', X: start.x, Y: start.y};
-          props.socket.emit('data', game);
-        }}>JOIN</button>
+      <button 
+        className={styles.button} style={{margin: '10px'}} 
+        onClick={() => {
+          if(avatar && pseudo){
+            dispatch( visitSpace({...localSpace, localUser: {avatar, pseudo}}) ); 
+            setHasJoined(true)
+            props.socket.emit('join', spaceId);
+            const game = {room: spaceId, id: props.socket.id, name: pseudo, avatar: avatar, dir: 'd', X: start.x, Y: start.y};
+            props.socket.emit('data', game);
+          }
+        }}
+      >
+        JOIN
+      </button>
     </div>;
 
     return (
@@ -228,7 +234,8 @@ function Space(props) {
                   </>}
                 </div>
                 <div style={{display: 'flex'}}>
-                  {!loading && goodId && hasJoined && isOwner && <button onClick={()=>{router.push(`/map/${spaceId}/${spaceName}`)}} className={styles.button}>
+                  {!loading && goodId && hasJoined && isOwner && 
+                  <button onClick={()=>{router.push(`/map/${spaceId}/${spaceName}`)}} className={styles.button}>
                     <FontAwesomeIcon style={{fontSize: '20px'}} icon={faMap}/>
                     <div className={styles.tooltip}>Open&nbsp;map&nbsp;maker</div>
                   </button>}

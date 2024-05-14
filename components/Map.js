@@ -45,6 +45,10 @@ function Map(props) {
     const [areas, setAreas] = useState(false)
     const [cam, setCam] = useState(false)
 
+    props.socket.on('otherPlayers', (otherPlayers) => {
+        setData(otherPlayers)
+    })
+
     useEffect(() => {
         // Vérifier si window est défini avant d'ajouter l'écouteur d'événement
         if (typeof window !== 'undefined') {
@@ -235,7 +239,7 @@ function Map(props) {
         
         if(closestPlayer){
             cam = true;
-            console.log(closestPlayer && closestPlayer.name, closestDistance)
+            // console.log(closestPlayer && closestPlayer.name, closestDistance)
         }
         if (futureTile[futureCoord] === 'A' || (futureTile[axisCoords] === 'A' && futureTile[futureCoord] === 1)) {
             cam = true; 
@@ -348,16 +352,6 @@ function Map(props) {
 
 
     useEffect(()=>{
-
-        // props.socket.on('join', playerid =>{
-        //     console.log(playerid, 'join the room')
-        //     const game = {room: spaceId, id: props.socket.id, name: props.pseudo, avatar: props.avatar, dir, X: xCoords, Y: yCoords};
-        //     setTimeout(() => {
-        //         props.socket.emit('data', game);
-        //         console.log('emit data', game)
-        //     }, 2000);
-        // })
-
         props.socket.on('data', (update) => {
             // console.log('update', update)
             let tmpData = [...data]
@@ -371,6 +365,23 @@ function Map(props) {
             setData(tmpData)
         })
 
+        props.socket.on('remove', (id) => {
+            console.log(id, 'leave')
+            let tmpData = [...data]
+            let tmp = tmpData.findIndex(e => e.id === id)
+            if(tmp < 0){
+                
+            }else {
+                tmpData.splice(tmp, 1)
+            }
+            // console.log(tmpData)
+            setData(tmpData)
+        })
+
+        // props.socket.on('otherPlayers', (otherPlayers) => {
+        //     console.log('otherPlayers')
+        //     setData(otherPlayers)
+        // })
     },[data])
 
     const people = data.map((e,i) => <Character key={i} name={e.name} dir={e.dir} avatar={e.avatar} left={windowDimensions.width /2 + xSteps + (e.X * 32)} top={windowDimensions.height /2 + ySteps + (e.Y * 32)} cam={false} antiScale={antiScale} />);
