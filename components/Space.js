@@ -194,6 +194,8 @@ function Space(props) {
             props.socket.emit('join', spaceId);
             const game = {room: spaceId, id: props.socket.id, name: pseudo, avatar: avatar, dir: 'd', X: start.x, Y: start.y};
             props.socket.emit('data', game);
+          }else{
+            console.log('need to choice an avatar & a pseudo')
           }
         }}
       >
@@ -242,7 +244,7 @@ function Space(props) {
                 </div>
             </div>
 
-            {!hasJoined  && goodId && avatarModal}
+            {!hasJoined && !loading && goodId && avatarModal}
 
             {loading && <Loader/>}
             {!loading && !goodId && invalidSpace}

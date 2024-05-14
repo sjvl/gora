@@ -1,13 +1,64 @@
+import { useState, useEffect } from "react";
+
 function Character(props) {
-    let pos = -2;
-    if(props.dir.startsWith("r")) pos = -290; 
-    if(props.dir.startsWith("l")) pos = -98;
-    if(props.dir.startsWith("u")) pos = -194;
+    const [frames, setFrames] = useState(-2)
+    const [animating, setAnimating] = useState(0)
+
+    function handleMoove() {
+        if(animating === 0){
+            if(props.dir.startsWith("d")) {
+                setFrames(-2);
+                if (props.dir === 'down') {
+                    animate(-2);
+                }
+            }
+            if(props.dir.startsWith("u")) {
+                setFrames(-194);
+                if (props.dir === 'up') {
+                    animate(-194);
+                }
+            }
+            if(props.dir.startsWith("l")) {
+                setFrames(-98);
+                if (props.dir === 'left') {
+                    animate(-98);
+                }
+            }
+            if(props.dir.startsWith("r")) {
+                setFrames(-290);
+                if (props.dir === 'right') {
+                    animate(-290);
+                }
+            }
+        }
+
+    }
+
+    function animate(pos) {
+        if(animating === 0){
+            setAnimating(1);
+
+            setTimeout(() => {
+                setFrames(pos - 64)
+            }, 53);
+            setTimeout(() => {
+                setFrames(pos - 32)
+            }, 106);
+            setTimeout(() => {
+                setFrames(pos)
+                setAnimating(0);
+            }, 160);
+        }   
+    }
+
+    useEffect(() => {
+        handleMoove()
+    }, [props.dir, props.x, props.y]);
 
     return (
         <div>
-            <div style={{ position: 'fixed', top: `${props.top}px`, left: `${props.left}px` }}>
-                <img style={{ width: '32px', height:'64px', objectFit: 'none', objectPosition: `${pos}px` }}
+            <div style={{ position: 'fixed', top: `${props.top + (props.y * 32)}px`, left: `${props.left + (props.x * 32)}px` }}>
+                <img style={{ width: '32px', height:'64px', objectFit: 'none', objectPosition: `${frames}px` }}
                     src={props.avatar}
                 />
                 {props.cam && 

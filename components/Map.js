@@ -48,10 +48,9 @@ function Map(props) {
     //get otherPlayers data
     useEffect(()=>{
         props.socket.on('otherPlayers', (otherPlayers) => {
-            console.log('otherPlayers')
             setData(otherPlayers)
         })
-    },[props.socket])
+    },[])
 
     useEffect(() => {
         // Vérifier si window est défini avant d'ajouter l'écouteur d'événement
@@ -388,7 +387,7 @@ function Map(props) {
         // })
     },[data])
 
-    const people = data.map((e,i) => <Character key={i} name={e.name} dir={e.dir} avatar={e.avatar} left={windowDimensions.width /2 + xSteps + (e.X * 32)} top={windowDimensions.height /2 + ySteps + (e.Y * 32)} cam={false} antiScale={antiScale} />);
+    const people = data.map((e,i) => <Character key={i} name={e.name} dir={e.dir} x={e.X} y={e.Y} avatar={e.avatar} left={windowDimensions.width /2 + xSteps} top={windowDimensions.height /2 + ySteps} cam={false} antiScale={antiScale} />);
 
     return (
         <div 

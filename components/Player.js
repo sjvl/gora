@@ -75,7 +75,9 @@ function Player(props) {
 
     return (
         <div className={styles.avatar}>
-            <img  style={{ zIndex: 1, width:'32px', height:'64px', objectPosition: `-${frames}px`,  objectFit: 'none' }} src={props.avatar} />
+            <img  style={{ zIndex: 1, width:'32px', height:'64px', objectPosition: `-${frames}px`,  objectFit: 'none' }} 
+                src={props.avatar} 
+            />
             {props.cam && 
             <span style={{ position: 'absolute', zIndex: 4, bottom: `${95 + props.antiScale * props.antiScale}%`, left: '50%', transform: 'translateX(-50%)' }}>
                 <img
