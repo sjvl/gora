@@ -381,10 +381,6 @@ function Map(props) {
             setData(tmpData)
         })
 
-        // props.socket.on('otherPlayers', (otherPlayers) => {
-        //     console.log('otherPlayers')
-        //     setData(otherPlayers)
-        // })
     },[data])
 
     const people = data.map((e,i) => <Character key={i} name={e.name} dir={e.dir} x={e.X} y={e.Y} avatar={e.avatar} left={windowDimensions.width /2 + xSteps} top={windowDimensions.height /2 + ySteps} cam={false} antiScale={antiScale} />);

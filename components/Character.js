@@ -4,6 +4,10 @@ function Character(props) {
     const [frames, setFrames] = useState(-2)
     const [animating, setAnimating] = useState(0)
 
+    const [x, setX] = useState(props.x);
+    const [y, setY] = useState(props.y);
+
+    // Fonctions pour animer les frames
     function handleMoove() {
         if(animating === 0){
             if(props.dir.startsWith("d")) {
@@ -51,14 +55,41 @@ function Character(props) {
         }   
     }
 
+    // Fonction pour lisser les coordonnées
+    const smoothMove = (targetX, targetY, duration) => {
+        const start = Date.now();
+        const startX = x;
+        const startY = y;
+  
+        const updatePosition = () => {
+          const elapsed = Date.now() - start;
+          const progress = Math.min(elapsed / duration, 1);
+  
+          const currentX = startX + (targetX - startX) * progress;
+          const currentY = startY + (targetY - startY) * progress;
+  
+          setX(currentX);
+          setY(currentY);
+  
+          if (progress < 1) {
+            requestAnimationFrame(updatePosition);
+          }
+        };
+  
+        updatePosition();
+    };
+
     useEffect(() => {
+        // Appel de la fonction d'animation
         handleMoove()
-    }, [props.dir, props.x, props.y]);
+        // Appel de la fonction de lissage
+        smoothMove(props.x, props.y, 160);
+    }, [props.x, props.y, props.dir]);
 
     return (
         <div>
-            <div style={{ position: 'fixed', top: `${props.top + (props.y * 32)}px`, left: `${props.left + (props.x * 32)}px` }}>
-                <img style={{ width: '32px', height:'64px', objectFit: 'none', objectPosition: `${frames}px` }}
+            <div style={{ position: 'fixed', top: `${props.top + (y * 32)}px`, left: `${props.left + (x * 32)}px` }}>
+                <img style={{ width: '32px', height:'64px', objectFit: 'none', objectPosition: `${frames}px`}}
                     src={props.avatar}
                 />
                 {props.cam && 
