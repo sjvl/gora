@@ -41,18 +41,22 @@ function Map(props) {
     const [data, setData] = useState([])
     // const [data, setData] = useState([{name: 'Mathieu', X: 11, Y: 12, dir: 'left', cam: false}, {name: 'Lionel', X: 14, Y: 14, dir: 'down' , cam: false}])
 
-    
     const [areas, setAreas] = useState(false)
     const [cam, setCam] = useState(false)
 
-    //get otherPlayers data
-    useEffect(()=>{
+    // Initialisation
+    useEffect(() => {
+        // Récupérer la donnée des joueurs déjà présents dans la room
         props.socket.on('otherPlayers', (otherPlayers) => {
             setData(otherPlayers)
         })
-    },[])
 
-    useEffect(() => {
+        const handleResize = () => {
+            setWindowDimensions({
+              width: window.innerWidth,
+              height: window.innerHeight
+            });
+        };
         // Vérifier si window est défini avant d'ajouter l'écouteur d'événement
         if (typeof window !== 'undefined') {
             setWindowDimensions({
@@ -123,7 +127,7 @@ function Map(props) {
             })
           }
         };
-      },[space, spaceId])
+    },[space, spaceId]);
 
     //gestion du zoom
     const [scale, setScale] = useState(2);
@@ -150,34 +154,10 @@ function Map(props) {
         setAntiScale(newAntiScale)
     };
 
-    //initialization
-    const handleResize = () => {
-        setWindowDimensions({
-          width: window.innerWidth,
-          height: window.innerHeight
-        });
-    };
-    // const getData = () => {
-    //     fetch('https://gora-back.vercel.app/walls.json'
-    //     ,{
-    //       headers : { 
-    //         'Content-Type': 'application/json',
-    //         'Accept': 'application/json'
-    //        }
-    //     }
-    //     )
-    //     .then((data) => data.json())
-    //     .then((json) => {
-    //         setWalls(json);
-    //         const gridSquares = json.col.map((row,y) => row.map((col,x) => <TileArea key={`tile_${x}_${y}`} x={x} y={y} isClicked={col}/>));
-    //         setMeetingTiles(gridSquares);
-    //     })
-    // };
-
+    // Gestion du déplacement et EMIT SOCKET
     function distanceManhattan(tile1, tile2) {
         return Math.abs(tile2.X - tile1.X) + Math.abs(tile2.Y - tile1.Y);
     }
-
     function move(dir) {
         let actualTile = { X: xCoords, Y: yCoords };
         let actualTileType = null;
@@ -212,9 +192,14 @@ function Map(props) {
             axisCoords = yCoords;
         } else {
             // Nobody move! 
+            //SOCKET EMIT
+            const game = {room: spaceId, id: props.socket.id, name: props.pseudo, avatar: props.avatar, dir, X: xCoords, Y: yCoords};
+            props.socket.emit('data', game);
+            //SOCKET EMIT
             return;
         }
     
+        //même case
         const indiceCommun = () => {
             for (let i = 0; i < Math.min(meetX.length, meetY.length); i++) {
                 if (meetX[i] && meetY[i]) {
@@ -223,6 +208,7 @@ function Map(props) {
             }
             return false; // no meet
         }
+        //distance entre joueurs
         data.forEach((otherPlayer) => {
             const dist = distanceManhattan(actualTile, otherPlayer);
             if (dist < closestDistance) {
@@ -234,12 +220,12 @@ function Map(props) {
         let go = false;
         let area = false;
         let cam = false;
-
         
-        
+        // peut avancer
         if (futureTile[futureCoord] !== 1 && indiceCommun() === false) go = true;
         setMoovable(go);
         
+        // allumer la cam
         if(closestPlayer){
             cam = true;
             // console.log(closestPlayer && closestPlayer.name, closestDistance)
@@ -294,66 +280,83 @@ function Map(props) {
             }
         }
     }
+
+    // Gestion des touches
+    useEffect(() => {    
+        let timeoutId;
+        let dir;
+        let time = 100 // délai de l'appui long
+
+        const handleKeyDown = (e) => {
+            if(e.repeat){time = 0}; // si repeat on reste en appui long
     
-    function handleKeyDown(e) {
-        if (!mapMooving) {
-            let dir;
-            if (e.repeat) {
-                switch (e.key) {
-                    case 'ArrowDown':
-                        dir = 'down';
-                        break;
-                    case 'ArrowUp':
-                        dir = 'up';
-                        break;
-                    case 'ArrowLeft':
-                        dir = 'left';
-                        break;
-                    case 'ArrowRight':
-                        dir = 'right';
-                        break;
-                    default:
-                        return;
-                }
-            }else {
-                switch (e.key) {
-                    case 'ArrowDown':
-                        dir = 'd';
-                        break;
-                    case 'ArrowUp':
-                        dir = 'u';
-                        break;
-                    case 'ArrowLeft':
-                        dir = 'l';
-                        break;
-                    case 'ArrowRight':
-                        dir = 'r';
-                        break;
-                    default:
-                        return;
-                }
-                //SOCKET EMIT
-                const game = {room: spaceId, id: props.socket.id, name: props.pseudo, avatar: props.avatar, dir, X: xCoords, Y: yCoords};
-                props.socket.emit('data', game);
-                //SOCKET EMIT
+            // appui court ici    
+            switch (e.key) {
+                case 'ArrowDown':
+                    dir = 'd';
+                    break;
+                case 'ArrowUp':
+                    dir = 'u';
+                    break;
+                case 'ArrowLeft':
+                    dir = 'l';
+                    break;
+                case 'ArrowRight':
+                    dir = 'r';
+                    break;
+                default:
+                    return;
             }
             setDir(dir);
             move(dir);
-        }
-    }
     
-    useEffect(() => {    
-        document.addEventListener('keydown', handleKeyDown);
-            
-        // Don't forget to clean up
-        return function cleanup() {
-          document.removeEventListener('keydown', handleKeyDown);
-          setDir('')
-        }
+    
+    
+            // Démarre le délai pour détecter un appui long
+            timeoutId = setTimeout(() => {
+                // appui long ici
+                if (!mapMooving) {
+                    let longDir = dir; // Utilisation de longDir pour conserver la valeur de dir
+                    switch (e.key) {
+                        case 'ArrowDown':
+                            longDir = 'down';
+                            break;
+                        case 'ArrowUp':
+                            longDir = 'up';
+                            break;
+                        case 'ArrowLeft':
+                            longDir = 'left';
+                            break;
+                        case 'ArrowRight':
+                            longDir = 'right';
+                            break;
+                        default:
+                            return;
+                    }
+                    console.log(longDir); // Affiche la direction longue
+                    setDir(longDir); // Mettre à jour la direction avec longDir
+                    move(longDir); // Déplacer dans la direction longue
+                }
+            }, time); // Durée en millisecondes avant de considérer l'appui comme long
+        };
+    
+        const handleKeyUp = (event) => {
+            clearTimeout(timeoutId);
+        };
 
+        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('keyup', handleKeyUp);
+    
+        // Nettoyage des écouteurs d'événements
+        return function cleanup() {
+            document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener('keyup', handleKeyUp);
+            clearTimeout(timeoutId);
+        };
     }, [xCoords, yCoords, xSteps, ySteps, mapMooving, walls]);
 
 
+    // Actualisation de la data
     useEffect(()=>{
         props.socket.on('data', (update) => {
             // console.log('update', update)
