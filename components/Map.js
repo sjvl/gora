@@ -333,7 +333,6 @@ function Map(props) {
                         default:
                             return;
                     }
-                    console.log(longDir); // Affiche la direction longue
                     setDir(longDir); // Mettre à jour la direction avec longDir
                     move(longDir); // Déplacer dans la direction longue
                 }
@@ -408,7 +407,7 @@ function Map(props) {
                 
                 {people}
 
-                <Player dir={dir} moovable={moovable} cam={cam} antiScale={antiScale} pseudo={props.pseudo} avatar={props.avatar} />
+                <Player dir={dir} moovable={moovable} cam={cam} socket={props.socket} roomId={spaceId} antiScale={antiScale} pseudo={props.pseudo} avatar={props.avatar} />
             </div>
         </div>
     );

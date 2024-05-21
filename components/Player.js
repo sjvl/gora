@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from '../styles/Player.module.css';
+import VideoChat from './Video';
 
 
 function Player(props) {
@@ -80,6 +81,8 @@ function Player(props) {
             />
             {props.cam && 
             <span style={{ position: 'absolute', zIndex: 4, bottom: `${95 + props.antiScale * props.antiScale}%`, left: '50%', transform: 'translateX(-50%)' }}>
+                {/* <VideoChat roomId={props.roomId} socket={props.socket}/> */}
+                
                 <img
                     style={{ objectFit: 'cover', backgroundColor: 'white', width: `${48 * props.antiScale}px`, borderRadius: `${3 * props.antiScale}px` }}
                     src='/cam.png'

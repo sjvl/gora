@@ -7,6 +7,7 @@ import { faVideoCamera, faMicrophone, faMap } from '@fortawesome/free-solid-svg-
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { trashVisitSpace, visitSpace } from '../reducers/user';
+import VideoChat from './Video';
 
 
 function Space(props) {
@@ -249,6 +250,7 @@ function Space(props) {
             {loading && <Loader/>}
             {!loading && !goodId && invalidSpace}
             {!loading && goodId && <Map socket={props.socket} start={start} pseudo={pseudo} avatar={avatar} />}
+            {!loading && goodId && <VideoChat roomId={spaceId} socket={props.socket}/>}
         </main>
     );
 }
