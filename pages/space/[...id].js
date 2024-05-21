@@ -7,9 +7,9 @@ import { useEffect } from 'react';
 
 function SpaceId() {
 
-    const socket = io('http://localhost:3000/');
+    // const socket = io('http://localhost:3000/');
     // const socket = io('https://gora-back.vercel.app/');
-    // const socket = io('https://gora-gora-97ecbe0c.koyeb.app/');
+    const socket = io('https://gora-gora-97ecbe0c.koyeb.app/');
 
     useEffect(() => {        
         socket.on("connection", (socket) => {
