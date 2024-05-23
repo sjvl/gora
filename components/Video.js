@@ -20,7 +20,7 @@ const VideoChat = (props) => {
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             .then(stream => {
                 setLocalStream(stream);
-                localVideoRef.current.srcObject = stream;
+                // localVideoRef.current.srcObject = stream;
                 setLocalStreamReady(true);
                 console.log('Local stream initialized');
 
@@ -86,9 +86,10 @@ const VideoChat = (props) => {
 
     useEffect(() => {
         if (remoteStream && remoteVideoRef.current) {
+            localVideoRef.current.srcObject = localStream;
             remoteVideoRef.current.srcObject = remoteStream;
         }
-    }, [remoteStream]);
+    }, [peerRef, remoteStream, remoteVideoRef]);
 
     const handleOffer = async (data) => {
         if (!localStreamReady) {
@@ -168,10 +169,10 @@ const VideoChat = (props) => {
     };
     
     return (
-        <div style={{zIndex:1, width:'100vw', height:'100vh', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
-            <video width={'150px'} ref={localVideoRef} autoPlay muted />
-            <video width={'200px'} ref={remoteVideoRef} autoPlay />
-            <button onClick={startCall}>Start Call</button>
+        <div style={{position:'absolute', top:'90px', zIndex:1, width:'100vw', display:'flex', alignItems:'center', justifyContent:'center'}}>
+            {remoteStream && <video style={{width:'200px', height:'140px', objectFit:'cover', borderRadius:'10px'}} ref={localVideoRef} autoPlay muted />}
+            {remoteStream && <video style={{width:'200px', height:'140px', objectFit:'cover', borderRadius:'10px'}} ref={remoteVideoRef} autoPlay />}
+            {!remoteStream && <button onClick={startCall}>Start Call</button>}
         </div>
     );
 };
