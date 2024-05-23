@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-// import socket from './socket';
 
 const VideoChat = (props) => {
     const [localStream, setLocalStream] = useState(null);
@@ -13,8 +12,6 @@ const VideoChat = (props) => {
     const candidatesQueue = useRef([]);
 
     useEffect(() => {
-        // Join room
-        // props.socket.emit('joinRoom', props.roomId);
 
         // Get user media
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -49,6 +46,12 @@ const VideoChat = (props) => {
 
         return () => {
             props.socket.off('signal');
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+            if (peerRef.current) {
+                peerRef.current.close();
+            }
         };
     }, [props.roomId, localStreamReady]);
 
@@ -89,7 +92,7 @@ const VideoChat = (props) => {
             localVideoRef.current.srcObject = localStream;
             remoteVideoRef.current.srcObject = remoteStream;
         }
-    }, [peerRef, remoteStream, remoteVideoRef]);
+    }, [localStream, remoteStream]);
 
     const handleOffer = async (data) => {
         if (!localStreamReady) {
