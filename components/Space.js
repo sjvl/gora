@@ -250,7 +250,7 @@ function Space(props) {
             {loading && <Loader/>}
             {!loading && !goodId && invalidSpace}
             {!loading && goodId && <Map socket={props.socket} start={start} pseudo={pseudo} avatar={avatar} />}
-            {!loading && goodId && <VideoChat roomId={spaceId} socket={props.socket}/>}
+            {/* {!loading && goodId && <VideoChat roomId={spaceId} socket={props.socket}/>} */}
         </main>
     );
 }

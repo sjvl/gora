@@ -5,6 +5,9 @@ import Character from './Character';
 import TileArea from './TileArea';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
+import VideoChat from './Video';
+import VideoChat2 from './Video2';
+import VideoChat3 from './Video3';
 
 
 function Map(props) {
@@ -155,9 +158,26 @@ function Map(props) {
     };
 
     // Gestion du déplacement et EMIT SOCKET
+    const [closestPlayer, setClosestPlayer] = useState(null)
     function distanceManhattan(tile1, tile2) {
         return Math.abs(tile2.X - tile1.X) + Math.abs(tile2.Y - tile1.Y);
     }
+    useEffect(()=>{
+        let closestDistance = 4;
+        let actualTile = { X: xCoords, Y: yCoords };
+        data.forEach((otherPlayer) => {
+            const dist = distanceManhattan(actualTile, otherPlayer);
+            if (dist < closestDistance) {
+                closestDistance = dist;
+                setClosestPlayer(otherPlayer);
+                setCam(true)
+            }else {
+                setClosestPlayer(null)
+                setCam(false)
+            };
+        });
+    },[data, xCoords, yCoords])
+
     function move(dir) {
         let actualTile = { X: xCoords, Y: yCoords };
         let actualTileType = null;
@@ -169,8 +189,7 @@ function Map(props) {
         let coordSetter;
         let axisCoords;
 
-        let closestPlayer = null;
-        let closestDistance = 4;
+
         let meetX;
         let meetY;
     
@@ -193,7 +212,7 @@ function Map(props) {
         } else {
             // Nobody move! 
             //SOCKET EMIT
-            const game = {room: spaceId, id: props.socket.id, name: props.pseudo, avatar: props.avatar, dir, X: xCoords, Y: yCoords};
+            const game = {room: spaceId, id: props.socket.id, name: props.pseudo, avatar: props.avatar, dir, X: xCoords, Y: yCoords, cam: cam};
             props.socket.emit('data', game);
             //SOCKET EMIT
             return;
@@ -208,34 +227,20 @@ function Map(props) {
             }
             return false; // no meet
         }
-        //distance entre joueurs
-        data.forEach((otherPlayer) => {
-            const dist = distanceManhattan(actualTile, otherPlayer);
-            if (dist < closestDistance) {
-                closestDistance = dist;
-                closestPlayer = otherPlayer;
-            }
-        });
     
         let go = false;
         let area = false;
-        let cam = false;
         
         // peut avancer
         if (futureTile[futureCoord] !== 1 && indiceCommun() === false) go = true;
         setMoovable(go);
-        
-        // allumer la cam
-        if(closestPlayer){
-            cam = true;
-            // console.log(closestPlayer && closestPlayer.name, closestDistance)
-        }
+
         if (futureTile[futureCoord] === 'A' || (futureTile[axisCoords] === 'A' && futureTile[futureCoord] === 1)) {
-            cam = true; 
+            setCam(true)
             area = true 
-        };
+        }
+        // else if(!closestPlayer) setCam(false)
         setAreas(area);
-        setCam(cam);
     
         if (go) {
             if (!mapMooving) {
@@ -273,7 +278,7 @@ function Map(props) {
                     if(dir === 'right'){tmpX = xCoords +1}
                     if(dir === 'up'){tmpY = yCoords -1}
                     if(dir === 'down'){tmpY = yCoords +1}
-                    const game = {room: spaceId, id: props.socket.id, name: props.pseudo, avatar: props.avatar, dir, X: tmpX, Y: tmpY};
+                    const game = {room: spaceId, id: props.socket.id, name: props.pseudo, avatar: props.avatar, dir, X: tmpX, Y: tmpY, cam: cam};
                     props.socket.emit('data', game);
                     //SOCKET EMIT
                 }, 160);
@@ -371,7 +376,7 @@ function Map(props) {
         })
 
         props.socket.on('remove', (id) => {
-            console.log(id, 'leave')
+            // console.log(id, 'leave')
             let tmpData = [...data]
             let tmp = tmpData.findIndex(e => e.id === id)
             if(tmp < 0){
@@ -385,31 +390,34 @@ function Map(props) {
 
     },[data])
 
-    const people = data.map((e,i) => <Character key={i} name={e.name} dir={e.dir} x={e.X} y={e.Y} avatar={e.avatar} left={windowDimensions.width /2 + xSteps} top={windowDimensions.height /2 + ySteps} cam={false} antiScale={antiScale} />);
+    const people = data.map((e,i) => <Character key={i} name={e.name} dir={e.dir} x={e.X} y={e.Y} avatar={e.avatar} left={windowDimensions.width /2 + xSteps} top={windowDimensions.height /2 + ySteps} cam={cam} antiScale={antiScale} />);
 
     return (
-        <div 
-            onWheel={handleWheel}
-            onTouchMove={handlePinch}
-            style={{width: '100%', height: '100%', overflow: 'hidden', touchAction: 'none', position: 'relative'}}>
-            <div style={{position :'fixed', transform: `scale(${scale})`, transformOrigin: '50vw 50vh'}}>
-                <img style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`, backgroundColor: 'whitesmoke'}}
-                    src={ground}
-                />
+        <>
+             <VideoChat2 roomId={spaceId} socket={props.socket} cam={cam}/>
+            <div 
+                onWheel={handleWheel}
+                onTouchMove={handlePinch}
+                style={{width: '100%', height: '100%', overflow: 'hidden', touchAction: 'none', position: 'relative'}}>
+                <div style={{position :'fixed', transform: `scale(${scale})`, transformOrigin: '50vw 50vh'}}>
+                    <img style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`, backgroundColor: 'whitesmoke'}}
+                        src={ground}
+                    />
 
-                <img style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`, zIndex: 2 }}
-                    src={foreground}
-                />
+                    <img style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`, zIndex: 2 }}
+                        src={foreground}
+                    />
 
-                <div className={areas ? styles.fadeIn : styles.fadeOut} style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`, zIndex: 2 }}>
-                    {meetingsTiles}
+                    <div className={areas ? styles.fadeIn : styles.fadeOut} style={{ position: 'fixed', top: `${windowDimensions.height / 2 + 32 + ySteps}px`, left: `${windowDimensions.width /2 + xSteps}px`, zIndex: 2 }}>
+                        {meetingsTiles}
+                    </div>
+                    
+                    {people}
+
+                    <Player dir={dir} moovable={moovable} cam={cam} socket={props.socket} roomId={spaceId} antiScale={antiScale} pseudo={props.pseudo} avatar={props.avatar} />
                 </div>
-                
-                {people}
-
-                <Player dir={dir} moovable={moovable} cam={cam} socket={props.socket} roomId={spaceId} antiScale={antiScale} pseudo={props.pseudo} avatar={props.avatar} />
             </div>
-        </div>
+        </>
     );
 }
 

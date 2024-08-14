@@ -92,13 +92,13 @@ function Character(props) {
                 <img style={{ width: '32px', height:'64px', objectFit: 'none', objectPosition: `${frames}px`}}
                     src={props.avatar}
                 />
-                {props.cam && 
+                {/* {props.cam && 
                 <span style={{ position: 'absolute', zIndex: 1, bottom: `${95 + props.antiScale * props.antiScale}%`, left: '50%', transform: 'translateX(-50%)' }}>
                     <img
                         style={{ objectFit: 'cover', backgroundColor: 'white', width: `${48 * props.antiScale}px`, borderRadius: `${3 * props.antiScale}px` }}
                         src='/cam.png'
                     />
-                </span>}
+                </span>} */}
                 <span style={{ backgroundColor: 'rgba(0,0,0,0.5)', color: 'white', fontSize: `${6 * props.antiScale}px`, textAlign: 'center', borderRadius: `${6 * props.antiScale}px`, padding: `${3 * props.antiScale}px ${6 * props.antiScale}px`, position: 'absolute', zIndex: 1, bottom: '75%', left: '50%', transform: 'translateX(-50%)' }}>
                     {props.name}
                 </span>
